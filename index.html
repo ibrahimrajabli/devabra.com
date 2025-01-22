@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ibrahim Rajabli - Full-Stack Developer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Matrix Loading Animation */
+        .matrix-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeOut 1s ease-in-out 3s forwards;
+        }
+
+        .matrix-text {
+            font-family: 'Courier New', monospace;
+            font-size: 1.5rem;
+            color: #0f0;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 2px solid #0f0;
+            animation: typing 2s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 70%; }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: #0f0; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        /* Container for Content */
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px 60px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 1.5s ease-in-out;
+            position: relative;
+            z-index: 2;
+            opacity: 0;
+            animation-delay: 3s;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Avatar Image */
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            margin-bottom: 20px;
+            animation: slideIn 1s ease-in-out;
+        }
+
+        /* Header and Subheader */
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            animation: slideIn 1s ease-in-out;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            animation: slideIn 1.2s ease-in-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Skills Section */
+        .skills {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .skills span {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .skills span:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Social Links */
+        .links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 30px;
+            text-decoration: none;
+            color: #fff;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+
+        .links a::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300%;
+            height: 300%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent);
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.5s ease;
+            border-radius: 50%;
+        }
+
+        .links a:hover::before {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .links a:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .links a i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .links a.telegram { background-color: #0088cc; }
+        .links a.linkedin { background-color: #0077b5; }
+        .links a.facebook { background-color: #3b5998; }
+        .links a.instagram { background-color: #e4405f; }
+        .links a.x { background-color: #000000; }
+
+        /* Background Animation */
+        .background-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .shape {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            animation: move 10s infinite ease-in-out;
+        }
+
+        .shape.circle {
+            border-radius: 50%;
+        }
+
+        .shape.triangle {
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+
+        .shape.square {
+            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+        }
+
+        @keyframes move {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20vh) rotate(180deg); }
+            100% { transform: translateY(0) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Matrix Loading Animation -->
+    <div class="matrix-loading">
+        <div class="matrix-text">Loading Ibrahim Rajabli's Portfolio...</div>
+    </div>
+
+    <!-- Background Shapes -->
+    <div class="background-shapes">
+        <div class="shape circle" style="width: 150px; height: 150px; top: 10%; left: 5%; animation-duration: 12s;"></div>
+        <div class="shape triangle" style="width: 120px; height: 120px; top: 70%; left: 80%; animation-duration: 15s;"></div>
+        <div class="shape square" style="width: 100px; height: 100px; top: 50%; left: 20%; animation-duration: 10s;"></div>
+        <div class="shape circle" style="width: 200px; height: 200px; top: 30%; left: 70%; animation-duration: 18s;"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Avatar Image -->
+        <img src="https://ibb.co/vY1zZxf" alt="Avatar" class="avatar">
+
+        <h1>Ibrahim Rajabli</h1>
+        <p>Full-Stack Developer | Java | React</p>
+
+        <!-- Skills Section -->
+        <div class="skills">
+            <span>Java</span>
+            <span>Spring Boot</span>
+            <span>React</span>
+            <span>JavaScript</span>
+            <span>HTML/CSS</span>
+            <span>SQL</span>
+            <span>REST APIs</span>
+            <span>Git</span>
+        </div>
+
+        <!-- Social Links -->
+        <div class="links">
+            <a href="https://t.me/devabra" class="telegram" target="_blank"><i class="fab fa-telegram"></i>Telegram</a>
+            <a href="https://www.linkedin.com/in/ibrahim-rajabli-828b536a/" class="linkedin" target="_blank"><i class="fab fa-linkedin"></i>LinkedIn</a>
+            <a href="https://www.facebook.com/thedevabra" class="facebook" target="_blank"><i class="fab fa-facebook"></i>Facebook</a>
+            <a href="https://www.instagram.com/ibrahimrajabli/" class="instagram" target="_blank"><i class="fab fa-instagram"></i>Instagram</a>
+            <a href="https://twitter.com/devabra" class="x" target="_blank"><i class="fab fa-twitter"></i>X</a>
+          <a href="https://twitter.com/devabra" class="facebook" target="_blank"><i class="fab fa-envelope"></i>Mail</a>
+        </div>
+    </div>
+</body>
+</html>
