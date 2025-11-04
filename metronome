@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relaxing Metronome</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+        
+        .control-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+        }
+        
+        #startBtn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        #startBtn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        #stopBtn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        #stopBtn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(245, 87, 108, 0.4);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .current-bpm {
+            font-size: 3em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .phase {
+            font-size: 1.1em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .time-remaining {
+            font-size: 0.95em;
+            color: #888;
+        }
+        
+        .beat-indicator {
+            width: 60px;
+            height: 60px;
+            background: #667eea;
+            border-radius: 50%;
+            margin: 20px auto;
+            transition: transform 0.1s;
+        }
+        
+        .beat-indicator.pulse {
+            transform: scale(1.2);
+            background: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 Relaxing Metronome</h1>
+        
+        <div class="control-group">
+            <label for="startBpm">Starting BPM (Beats Per Minute):</label>
+            <input type="number" id="startBpm" value="60" min="10" max="300">
+        </div>
+        
+        <div class="control-group">
+            <label for="constantDuration">Constant Duration (minutes):</label>
+            <input type="number" id="constantDuration" value="1" min="0" step="0.1">
+        </div>
+        
+        <div class="control-group">
+            <label for="decreaseDuration">Decrease Duration (minutes):</label>
+            <input type="number" id="decreaseDuration" value="5" min="0.1" step="0.1">
+        </div>
+        
+        <div class="control-group">
+            <label for="endBpm">Ending BPM:</label>
+            <input type="number" id="endBpm" value="10" min="1" max="300">
+        </div>
+        
+        <div class="button-group">
+            <button id="startBtn">Start</button>
+            <button id="stopBtn" disabled>Stop</button>
+        </div>
+        
+        <div class="status" id="status" style="display: none;">
+            <div class="beat-indicator" id="beatIndicator"></div>
+            <div class="current-bpm" id="currentBpm">60</div>
+            <div class="phase" id="phase">Starting...</div>
+            <div class="time-remaining" id="timeRemaining"></div>
+        </div>
+    </div>
+
+    <script>
+        let audioContext;
+        let isRunning = false;
+        let startTime;
+        let nextBeatTime;
+        let currentBpm;
+        let animationFrame;
+        
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const statusDiv = document.getElementById('status');
+        const currentBpmDisplay = document.getElementById('currentBpm');
+        const phaseDisplay = document.getElementById('phase');
+        const timeRemainingDisplay = document.getElementById('timeRemaining');
+        const beatIndicator = document.getElementById('beatIndicator');
+        
+        // Get parameters
+        function getParams() {
+            return {
+                startBpm: parseFloat(document.getElementById('startBpm').value),
+                constantDuration: parseFloat(document.getElementById('constantDuration').value) * 60, // Convert to seconds
+                decreaseDuration: parseFloat(document.getElementById('decreaseDuration').value) * 60, // Convert to seconds
+                endBpm: parseFloat(document.getElementById('endBpm').value)
+            };
+        }
+        
+        // Create a soft, relaxing tone
+        function playBeat() {
+            if (!audioContext) return;
+            
+            const now = audioContext.currentTime;
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            // Use sine wave for soft tone
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(440, now); // A4 note
+            
+            // Soft attack and release for relaxing sound
+            gainNode.gain.setValueAtTime(0, now);
+            gainNode.gain.linearRampToValueAtTime(0.15, now + 0.01); // Soft volume
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.start(now);
+            oscillator.stop(now + 0.15);
+            
+            // Visual feedback
+            beatIndicator.classList.add('pulse');
+            setTimeout(() => beatIndicator.classList.remove('pulse'), 100);
+        }
+        
+        // Calculate current BPM based on elapsed time
+        function calculateCurrentBpm(elapsedTime, params) {
+            if (elapsedTime <= params.constantDuration) {
+                // Constant phase
+                return params.startBpm;
+            } else if (elapsedTime <= params.constantDuration + params.decreaseDuration) {
+                // Decrease phase
+                const decreaseElapsed = elapsedTime - params.constantDuration;
+                const decreaseProgress = decreaseElapsed / params.decreaseDuration;
+                
+                // Linear interpolation from startBpm to endBpm
+                return params.startBpm - (params.startBpm - params.endBpm) * decreaseProgress;
+            } else {
+                // Finished
+                return null;
+            }
+        }
+        
+        // Update display
+        function updateDisplay(elapsedTime, params) {
+            const bpm = calculateCurrentBpm(elapsedTime, params);
+            
+            if (bpm === null) {
+                stopMetronome();
+                return;
+            }
+            
+            currentBpmDisplay.textContent = Math.round(bpm);
+            
+            // Update phase
+            if (elapsedTime <= params.constantDuration) {
+                phaseDisplay.textContent = 'Constant Phase';
+                const remaining = params.constantDuration - elapsedTime;
+                timeRemainingDisplay.textContent = `${Math.ceil(remaining)}s until decrease`;
+            } else {
+                phaseDisplay.textContent = 'Decreasing Phase';
+                const remaining = (params.constantDuration + params.decreaseDuration) - elapsedTime;
+                timeRemainingDisplay.textContent = `${Math.ceil(remaining)}s remaining`;
+            }
+        }
+        
+        // Main metronome loop
+        function tick() {
+            if (!isRunning) return;
+            
+            const params = getParams();
+            const currentTime = audioContext.currentTime;
+            const elapsedTime = currentTime - startTime;
+            
+            currentBpm = calculateCurrentBpm(elapsedTime, params);
+            
+            if (currentBpm === null) {
+                stopMetronome();
+                return;
+            }
+            
+            // Schedule beats
+            while (nextBeatTime < currentTime + 0.1) {
+                const beatElapsedTime = nextBeatTime - startTime;
+                const beatBpm = calculateCurrentBpm(beatElapsedTime, params);
+                
+                if (beatBpm === null) break;
+                
+                // Schedule the beat
+                const scheduleTime = nextBeatTime;
+                setTimeout(() => playBeat(), (scheduleTime - audioContext.currentTime) * 1000);
+                
+                // Calculate next beat time
+                const beatInterval = 60.0 / beatBpm;
+                nextBeatTime += beatInterval;
+            }
+            
+            updateDisplay(elapsedTime, params);
+            animationFrame = requestAnimationFrame(tick);
+        }
+        
+        // Start metronome
+        function startMetronome() {
+            if (isRunning) return;
+            
+            // Initialize audio context
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            
+            // Resume audio context if suspended (browser autoplay policy)
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            
+            const params = getParams();
+            
+            isRunning = true;
+            startTime = audioContext.currentTime;
+            nextBeatTime = startTime;
+            currentBpm = params.startBpm;
+            
+            statusDiv.style.display = 'block';
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            
+            // Disable inputs while running
+            document.querySelectorAll('input').forEach(input => input.disabled = true);
+            
+            tick();
+        }
+        
+        // Stop metronome
+        function stopMetronome() {
+            isRunning = false;
+            
+            if (animationFrame) {
+                cancelAnimationFrame(animationFrame);
+            }
+            
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            
+            // Enable inputs
+            document.querySelectorAll('input').forEach(input => input.disabled = false);
+            
+            phaseDisplay.textContent = 'Stopped';
+            timeRemainingDisplay.textContent = '';
+        }
+        
+        // Event listeners
+        startBtn.addEventListener('click', startMetronome);
+        stopBtn.addEventListener('click', stopMetronome);
+    </script>
+</body>
+</html>
