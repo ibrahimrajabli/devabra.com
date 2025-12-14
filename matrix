@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ibrahim Rajabli - Full-Stack Developer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap');
+
+        * {
+            cursor: none !important;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --matrix-green: #00ff41;
+            --matrix-dark-green: #008f11;
+            --matrix-darker-green: #003b00;
+            --terminal-bg: rgba(0, 10, 2, 0.95);
+            --glow: 0 0 10px #00ff41, 0 0 20px #00ff41, 0 0 30px #00ff41;
+            --text-glow: 0 0 5px #00ff41, 0 0 10px #00ff41;
+        }
+
+        body {
+            font-family: 'VT323', monospace;
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: var(--matrix-green);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--matrix-green);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 10000;
+            transition: transform 0.1s ease, background 0.2s ease;
+            box-shadow: var(--glow);
+        }
+
+        .cursor.hover {
+            transform: scale(1.5);
+            background: rgba(0, 255, 65, 0.3);
+        }
+
+        .cursor-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--matrix-green);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 10001;
+            box-shadow: var(--glow);
+        }
+
+        /* Matrix Rain Canvas */
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .boot-text {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            color: var(--matrix-green);
+            text-align: left;
+            max-width: 700px;
+            width: 90%;
+            text-shadow: var(--text-glow);
+        }
+
+        .boot-line {
+            opacity: 0;
+            margin: 3px 0;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .boot-line.visible {
+            opacity: 1;
+            animation: typeIn 0.3s steps(40) forwards;
+        }
+
+        @keyframes typeIn {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        .boot-cursor {
+            display: inline-block;
+            width: 10px;
+            height: 18px;
+            background: var(--matrix-green);
+            animation: blink 0.7s infinite;
+            vertical-align: middle;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* Main Container */
+        .main-container {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .main-container.visible {
+            opacity: 1;
+        }
+
+        /* Terminal Window */
+        .terminal {
+            background: var(--terminal-bg);
+            border: 2px solid var(--matrix-green);
+            border-radius: 5px;
+            box-shadow: var(--glow), inset 0 0 50px rgba(0, 255, 65, 0.05);
+            max-width: 800px;
+            width: 100%;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Terminal Header */
+        .terminal-header {
+            background: linear-gradient(180deg, var(--matrix-darker-green), #001a00);
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--matrix-dark-green);
+        }
+
+        .terminal-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .terminal-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 1px solid rgba(0, 255, 65, 0.3);
+        }
+
+        .terminal-btn.red { background: #ff5f56; box-shadow: 0 0 5px #ff5f56; }
+        .terminal-btn.yellow { background: #ffbd2e; box-shadow: 0 0 5px #ffbd2e; }
+        .terminal-btn.green { background: #27c93f; box-shadow: 0 0 5px #27c93f; }
+
+        .terminal-title {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            color: var(--matrix-green);
+            flex: 1;
+            text-align: center;
+            text-shadow: var(--text-glow);
+        }
+
+        /* Terminal Body */
+        .terminal-body {
+            padding: 30px;
+        }
+
+        /* ASCII Art */
+        .ascii-art {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            line-height: 1.2;
+            color: var(--matrix-green);
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: var(--text-glow);
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        /* Profile Section */
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed var(--matrix-dark-green);
+        }
+
+        .avatar-container {
+            position: relative;
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 5px;
+            border: 2px solid var(--matrix-green);
+            box-shadow: var(--glow);
+            filter: grayscale(100%) brightness(1.2) contrast(1.1);
+            transition: filter 0.3s ease;
+        }
+
+        .avatar:hover {
+            filter: grayscale(0%) brightness(1) contrast(1);
+        }
+
+        .avatar-scanline {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.3) 2px,
+                rgba(0, 0, 0, 0.3) 4px
+            );
+            pointer-events: none;
+            border-radius: 5px;
+        }
+
+        .profile-info h1 {
+            font-family: 'VT323', monospace;
+            font-size: 2.5rem;
+            margin: 0 0 5px 0;
+            text-shadow: var(--glow);
+        }
+
+        .profile-info .role {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1rem;
+            color: var(--matrix-dark-green);
+            margin: 0;
+        }
+
+        .profile-info .role span {
+            color: var(--matrix-green);
+        }
+
+        /* Command Line */
+        .command-line {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            margin: 20px 0 10px 0;
+            color: var(--matrix-dark-green);
+        }
+
+        .command-line .prompt {
+            color: var(--matrix-green);
+        }
+
+        .command-line .command {
+            color: #fff;
+        }
+
+        /* Skills Grid */
+        .skills-output {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .skill-tag {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            padding: 8px 15px;
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid var(--matrix-dark-green);
+            color: var(--matrix-green);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skill-tag::before {
+            content: '>';
+            margin-right: 5px;
+            color: var(--matrix-dark-green);
+        }
+
+        .skill-tag:hover {
+            background: rgba(0, 255, 65, 0.2);
+            border-color: var(--matrix-green);
+            box-shadow: var(--glow);
+            transform: translateX(5px);
+        }
+
+        /* Email Section */
+        .email-section {
+            margin: 20px 0;
+        }
+
+        .email-link {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: transparent;
+            border: 1px solid var(--matrix-green);
+            color: var(--matrix-green);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .email-link:hover {
+            background: var(--matrix-green);
+            color: #000;
+            box-shadow: var(--glow);
+        }
+
+        /* Social Links */
+        .social-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .social-link {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: transparent;
+            border: 1px solid var(--matrix-dark-green);
+            color: var(--matrix-green);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .social-link::before {
+            content: '[';
+            color: var(--matrix-dark-green);
+        }
+
+        .social-link::after {
+            content: ']';
+            color: var(--matrix-dark-green);
+        }
+
+        .social-link:hover {
+            border-color: var(--matrix-green);
+            background: rgba(0, 255, 65, 0.1);
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .social-link:hover::before,
+        .social-link:hover::after {
+            color: var(--matrix-green);
+        }
+
+        .social-link i {
+            font-size: 1rem;
+        }
+
+        /* Footer */
+        .terminal-footer {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 12px;
+            color: var(--matrix-dark-green);
+            text-align: center;
+            padding: 15px;
+            border-top: 1px dashed var(--matrix-dark-green);
+        }
+
+        .terminal-footer .status {
+            color: var(--matrix-green);
+        }
+
+        /* Scanline Effect */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9998;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.1) 2px,
+                rgba(0, 0, 0, 0.1) 4px
+            );
+            opacity: 0.3;
+        }
+
+        /* Flicker Effect */
+        .terminal {
+            animation: flicker 0.15s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.97; }
+            100% { opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .profile-section {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-info h1 {
+                font-size: 2rem;
+            }
+
+            .ascii-art {
+                font-size: 6px;
+            }
+
+            .terminal-body {
+                padding: 20px;
+            }
+        }
+
+        /* Glitch Effect on Hover */
+        .glitch-text:hover {
+            animation: glitch 0.3s ease;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-dot"></div>
+
+    <!-- Scanlines Overlay -->
+    <div class="scanlines"></div>
+
+    <!-- Matrix Rain Canvas -->
+    <canvas id="matrix-canvas"></canvas>
+
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="boot-text">
+            <div class="boot-line" id="boot-1">BIOS v2.4.1 - Matrix OS Kernel Loading...</div>
+            <div class="boot-line" id="boot-2">Initializing neural pathways... [OK]</div>
+            <div class="boot-line" id="boot-3">Loading consciousness matrix... [OK]</div>
+            <div class="boot-line" id="boot-4">Establishing reality construct... [OK]</div>
+            <div class="boot-line" id="boot-5">Decrypting user profile: IBRAHIM_RAJABLI</div>
+            <div class="boot-line" id="boot-6">├── Skills module loaded</div>
+            <div class="boot-line" id="boot-7">├── Social protocols initialized</div>
+            <div class="boot-line" id="boot-8">├── Contact interfaces ready</div>
+            <div class="boot-line" id="boot-9">└── Identity verified [AUTHENTICATED]</div>
+            <div class="boot-line" id="boot-10">&nbsp;</div>
+            <div class="boot-line" id="boot-11">Rendering visual interface...</div>
+            <div class="boot-line" id="boot-12">Wake up, IBO... <span class="boot-cursor"></span></div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container" id="main-container">
+        <div class="terminal">
+            <div class="terminal-header">
+                <div class="terminal-buttons">
+                    <span class="terminal-btn red"></span>
+                    <span class="terminal-btn yellow"></span>
+                    <span class="terminal-btn green"></span>
+                </div>
+                <div class="terminal-title">ibrahim@matrix:~</div>
+            </div>
+
+            <div class="terminal-body">
+                <!-- ASCII Art -->
+                <div class="ascii-art">
+ ██████╗ ███████╗██╗   ██╗██╗██████╗  ██████╗ 
+ ██╔══██╗██╔════╝██║   ██║██║██╔══██╗██╔═══██╗
+ ██║  ██║█████╗  ██║   ██║██║██████╔╝██║   ██║
+ ██║  ██║██╔══╝  ╚██╗ ██╔╝██║██╔══██╗██║   ██║
+ ██████╔╝███████╗ ╚████╔╝ ██║██████╔╝╚██████╔╝
+ ╚═════╝ ╚══════╝  ╚═══╝  ╚═╝╚═════╝  ╚═════╝ 
+                </div>
+
+                <!-- Profile Section -->
+                <div class="profile-section">
+                    <div class="avatar-container">
+                        <img src="https://i.ibb.co/jRh4gvq/ibrahimrajabli-9386.jpg" alt="Ibrahim Rajabli" class="avatar">
+                        <div class="avatar-scanline"></div>
+                    </div>
+                    <div class="profile-info">
+                        <h1 class="glitch-text">> Ibrahim Rajabli</h1>
+                        <p class="role"><span>$</span> echo "Full-Stack Developer | Java | React"</p>
+                    </div>
+                </div>
+
+                <!-- Skills Command -->
+                <div class="command-line">
+                    <span class="prompt">root@matrix:~#</span> <span class="command">cat /skills/stack.txt</span>
+                </div>
+
+                <!-- Skills Output -->
+                <div class="skills-output">
+                    <span class="skill-tag">Java</span>
+                    <span class="skill-tag">Spring Boot</span>
+                    <span class="skill-tag">React</span>
+                    <span class="skill-tag">Next.js</span>
+                    <span class="skill-tag">Node.js</span>
+                    <span class="skill-tag">JavaScript</span>
+                    <span class="skill-tag">HTML/CSS</span>
+                    <span class="skill-tag">SQL</span>
+                    <span class="skill-tag">REST APIs</span>
+                    <span class="skill-tag">Git</span>
+                    <span class="skill-tag">Linux</span>
+                    <span class="skill-tag">Web Scraping</span>
+                </div>
+
+                <!-- Email Command -->
+                <div class="command-line">
+                    <span class="prompt">root@matrix:~#</span> <span class="command">./contact --email</span>
+                </div>
+
+                <!-- Email Section -->
+                <div class="email-section">
+                    <a href="mailto:ibrahimrajabli@gmail.com" class="email-link">
+                        <i class="fas fa-terminal"></i>
+                        ibrahimrajabli@gmail.com
+                    </a>
+                </div>
+
+                <!-- Social Command -->
+                <div class="command-line">
+                    <span class="prompt">root@matrix:~#</span> <span class="command">ls -la /social/</span>
+                </div>
+
+                <!-- Social Links -->
+                <div class="social-links">
+                    <a href="https://t.me/devabra" class="social-link" target="_blank">
+                        <i class="fab fa-telegram"></i>Telegram
+                    </a>
+                    <a href="https://www.linkedin.com/in/ibrahim-rajabli-828b536a/" class="social-link" target="_blank">
+                        <i class="fab fa-linkedin"></i>LinkedIn
+                    </a>
+                    <a href="https://www.facebook.com/thedevabra" class="social-link" target="_blank">
+                        <i class="fab fa-facebook"></i>Facebook
+                    </a>
+                    <a href="https://www.instagram.com/ibrahimrajabli/" class="social-link" target="_blank">
+                        <i class="fab fa-instagram"></i>Instagram
+                    </a>
+                    <a href="https://twitter.com/devabra" class="social-link" target="_blank">
+                        <i class="fab fa-x-twitter"></i>X
+                    </a>
+                </div>
+            </div>
+
+            <div class="terminal-footer">
+                <span class="status">●</span> Connection established | <span class="status">↑</span> Uptime: ∞ | Matrix v4.2.0
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Custom Cursor
+        const cursor = document.querySelector('.cursor');
+        const cursorDot = document.querySelector('.cursor-dot');
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX - 10 + 'px';
+            cursor.style.top = e.clientY - 10 + 'px';
+            cursorDot.style.left = e.clientX - 3 + 'px';
+            cursorDot.style.top = e.clientY - 3 + 'px';
+        });
+
+        // Hover effect for cursor
+        const hoverElements = document.querySelectorAll('a, .skill-tag, .terminal-btn');
+        hoverElements.forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+
+        // Matrix Rain Effect
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const charArray = chars.split('');
+
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+
+        const drops = [];
+        for (let i = 0; i < columns; i++) {
+            drops[i] = Math.random() * -100;
+        }
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#00ff41';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const char = charArray[Math.floor(Math.random() * charArray.length)];
+                const x = i * fontSize;
+                const y = drops[i] * fontSize;
+
+                // Bright head of the drop
+                ctx.fillStyle = '#fff';
+                ctx.fillText(char, x, y);
+
+                // Trail
+                ctx.fillStyle = '#00ff41';
+                ctx.fillText(charArray[Math.floor(Math.random() * charArray.length)], x, y - fontSize);
+
+                if (y > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 50);
+
+        // Window resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Boot Sequence Animation
+        const bootLines = [
+            'boot-1', 'boot-2', 'boot-3', 'boot-4', 'boot-5',
+            'boot-6', 'boot-7', 'boot-8', 'boot-9', 'boot-10',
+            'boot-11', 'boot-12'
+        ];
+
+        let currentLine = 0;
+
+        function showNextLine() {
+            if (currentLine < bootLines.length) {
+                document.getElementById(bootLines[currentLine]).classList.add('visible');
+                currentLine++;
+                const delay = currentLine < 5 ? 300 : currentLine < 10 ? 200 : 400;
+                setTimeout(showNextLine, delay);
+            } else {
+                // After boot sequence, show main content
+                setTimeout(() => {
+                    document.getElementById('loading-screen').classList.add('hidden');
+                    document.getElementById('main-container').classList.add('visible');
+                }, 2500);
+            }
+        }
+
+        // Start boot sequence after a brief delay
+        setTimeout(showNextLine, 500);
+
+        // Add typing sound effect (optional visual feedback)
+        document.querySelectorAll('.skill-tag, .social-link').forEach((el, index) => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateX(-20px)';
+            setTimeout(() => {
+                el.style.transition = 'all 0.3s ease';
+                el.style.opacity = '1';
+                el.style.transform = 'translateX(0)';
+            }, 4500 + (index * 100));
+        });
+    </script>
+</body>
+</html>
