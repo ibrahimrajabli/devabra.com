@@ -463,6 +463,26 @@
             .terminal-body {
                 padding: 20px;
             }
+
+            /* Hide custom cursor on mobile */
+            .cursor, .cursor-dot {
+                display: none !important;
+            }
+
+            * {
+                cursor: auto !important;
+            }
+        }
+
+        /* Also hide on touch devices */
+        @media (pointer: coarse) {
+            .cursor, .cursor-dot {
+                display: none !important;
+            }
+
+            * {
+                cursor: auto !important;
+            }
         }
 
         /* Glitch Effect on Hover */
@@ -572,9 +592,9 @@
 
                 <!-- Email Section -->
                 <div class="email-section">
-                    <a href="mailto:ibrahimrajabli@gmail.com" class="email-link">
+                    <a href="/cdn-cgi/l/email-protection#a1c8c3d3c0c9c8ccd3c0cbc0c3cdc8e1c6ccc0c8cd8fc2cecc" class="email-link">
                         <i class="fas fa-terminal"></i>
-                        ibrahimrajabli@gmail.com
+                        <span class="__cf_email__" data-cfemail="cda4afbfaca5a4a0bfaca7acafa1a48daaa0aca4a1e3aea2a0">[email&#160;protected]</span>
                     </a>
                 </div>
 
@@ -609,7 +629,7 @@
         </div>
     </div>
 
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         // Custom Cursor
         const cursor = document.querySelector('.cursor');
         const cursorDot = document.querySelector('.cursor-dot');
@@ -712,12 +732,3 @@
         document.querySelectorAll('.skill-tag, .social-link').forEach((el, index) => {
             el.style.opacity = '0';
             el.style.transform = 'translateX(-20px)';
-            setTimeout(() => {
-                el.style.transition = 'all 0.3s ease';
-                el.style.opacity = '1';
-                el.style.transform = 'translateX(0)';
-            }, 4500 + (index * 100));
-        });
-    </script>
-</body>
-</html>
