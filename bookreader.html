@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Rusça Okuma Kitabı</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    :root {
+      --bg: #f5f0e8;
+      --page-bg: linear-gradient(to bottom, #fdfbf7, #f8f4ec);
+      --text: #2c1810;
+      --text-secondary: #5a4a3a;
+      --translation: #6b5344;
+      --accent: #8b4513;
+      --border: rgba(139, 69, 19, 0.15);
+      --shadow: rgba(0,0,0,0.12);
+      --button-bg: linear-gradient(135deg, #8b4513 0%, #654321 100%);
+      --card-bg: rgba(255,255,255,0.85);
+      --input-bg: #fffdf8;
+    }
+    
+    .dark {
+      --bg: #0d1117;
+      --page-bg: linear-gradient(to bottom, #1a1f26, #21272e);
+      --text: #e6e1d9;
+      --text-secondary: #9a8a7a;
+      --translation: #c4b59d;
+      --accent: #d4a574;
+      --border: rgba(212, 165, 116, 0.15);
+      --shadow: rgba(0,0,0,0.4);
+      --button-bg: linear-gradient(135deg, #5c3d1e 0%, #3d2914 100%);
+      --card-bg: rgba(26,31,38,0.95);
+      --input-bg: #1a1f26;
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      min-height: 100dvh;
+      transition: background 0.3s, color 0.3s;
+    }
+    
+    #inputScreen {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+      padding-top: 60px;
+    }
+    
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 20px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 10px 40px var(--shadow);
+      border: 1px solid var(--border);
+    }
+    
+    h1 { text-align: center; font-size: 1.4rem; margin: 0 0 8px 0; font-weight: 400; }
+    .subtitle { text-align: center; color: var(--text-secondary); margin-bottom: 16px; font-size: 0.85rem; }
+    
+    .saved-info {
+      background: rgba(139, 69, 19, 0.05);
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+    .dark .saved-info { background: rgba(212, 165, 116, 0.1); }
+    .saved-info span { color: var(--accent); }
+    .saved-info button { background: transparent; border: none; color: var(--text-secondary); font-size: 11px; cursor: pointer; text-decoration: underline; }
+    
+    textarea {
+      width: 100%;
+      height: 250px;
+      padding: 12px;
+      font-size: 14px;
+      line-height: 1.6;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      resize: vertical;
+      font-family: Georgia, serif;
+      background: var(--input-bg);
+      color: var(--text);
+    }
+    
+    .btn {
+      display: block;
+      width: 100%;
+      margin-top: 12px;
+      padding: 14px;
+      font-size: 1rem;
+      font-family: Georgia, serif;
+      background: var(--button-bg);
+      color: #ffecd2;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px var(--shadow);
+    }
+    .btn-outline { background: transparent; color: var(--accent); border: 1px solid var(--accent); box-shadow: none; }
+    .btn:disabled { opacity: 0.6; cursor: wait; }
+    
+    .theme-toggle {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      background: var(--card-bg);
+      font-size: 20px;
+      cursor: pointer;
+      box-shadow: 0 2px 10px var(--shadow);
+      z-index: 100;
+    }
+    
+    #bookScreen { display: none; height: 100vh; height: 100dvh; flex-direction: column; overflow: hidden; }
+    
+    .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .top-bar button { background: transparent; border: none; color: var(--text-secondary); font-size: 13px; cursor: pointer; padding: 4px; }
+    .top-bar .icons { display: flex; gap: 4px; }
+    .icon-btn { width: 30px; height: 30px; border-radius: 50%; border: none; background: var(--card-bg); font-size: 14px; cursor: pointer; }
+    .icon-btn.active { background: var(--accent); }
+    
+    .lang-bar { display: flex; justify-content: space-between; align-items: center; padding: 4px 10px; background: rgba(139, 69, 19, 0.03); flex-shrink: 0; }
+    .dark .lang-bar { background: rgba(212, 165, 116, 0.05); }
+    .lang-toggle { display: flex; align-items: center; gap: 4px; padding: 4px 10px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 15px; cursor: pointer; font-size: 11px; }
+    .lang-toggle span.active { color: var(--accent); }
+    .lang-toggle span:not(.active) { color: var(--text-secondary); }
+    .page-info { font-size: 11px; color: var(--text-secondary); }
+    
+    .settings-panel { display: none; padding: 10px 14px; background: var(--card-bg); border-bottom: 1px solid var(--border); flex-shrink: 0; align-items: center; gap: 8px; }
+    .settings-panel.show { display: flex; }
+    .settings-panel span { font-size: 12px; color: var(--text-secondary); }
+    .settings-panel input[type="range"] { flex: 1; accent-color: var(--accent); }
+    
+    .book-container { flex: 1; display: flex; padding: 6px; overflow: hidden; }
+    .page-wrapper { flex: 1; position: relative; perspective: 1200px; }
+    
+    .page {
+      position: absolute;
+      inset: 0;
+      background: var(--page-bg);
+      border-radius: 4px 12px 12px 4px;
+      box-shadow: 4px 4px 20px var(--shadow);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: transform 0.3s ease-out;
+    }
+    .page.flip-next { transform: rotateY(-12deg); transform-origin: left center; }
+    .page.flip-prev { transform: rotateY(12deg); transform-origin: right center; }
+    
+    .page-spine { position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: linear-gradient(to right, rgba(0,0,0,0.06), transparent); pointer-events: none; }
+    .dark .page-spine { background: linear-gradient(to right, rgba(0,0,0,0.25), transparent); }
+    
+    .sentences { flex: 1; overflow: auto; display: flex; flex-direction: column; }
+    
+    .sentence { flex: 1; min-height: 60px; margin-bottom: 6px; padding: 10px; border-radius: 8px; border-left: 3px solid transparent; transition: all 0.25s ease; cursor: pointer; display: flex; flex-direction: column; justify-content: center; }
+    .sentence.revealed { background: rgba(139, 69, 19, 0.05); border-left-color: var(--accent); }
+    .dark .sentence.revealed { background: rgba(212, 165, 116, 0.1); }
+    
+    .sentence-main { display: flex; align-items: flex-start; gap: 6px; }
+    .sentence-text { flex: 1; margin: 0; font-size: 14px; line-height: 1.6; }
+    .speak-btn { width: 30px; height: 30px; border-radius: 50%; border: none; background: rgba(139, 69, 19, 0.1); font-size: 13px; cursor: pointer; flex-shrink: 0; }
+    .dark .speak-btn { background: rgba(212, 165, 116, 0.15); }
+    
+    .sentence-hidden { max-height: 0; opacity: 0; overflow: hidden; transition: all 0.3s ease; }
+    .sentence.revealed .sentence-hidden { max-height: 80px; opacity: 1; }
+    .sentence-hidden-inner { display: flex; align-items: flex-start; gap: 6px; margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--border); }
+    .sentence-hidden-text { flex: 1; margin: 0; font-size: 13px; color: var(--translation); font-style: italic; line-height: 1.5; }
+    .speak-btn-small { width: 26px; height: 26px; font-size: 11px; }
+    
+    .tap-hint { margin: 3px 0 0 0; font-size: 10px; color: var(--text-secondary); opacity: 0.5; }
+    .sentence.revealed .tap-hint { display: none; }
+    
+    .bg-page { position: absolute; border-radius: 4px 12px 12px 4px; z-index: -1; }
+    .bg-page-1 { top: 2px; right: -2px; bottom: -2px; left: 1px; background: rgba(248, 244, 236, 0.85); }
+    .bg-page-2 { top: 4px; right: -4px; bottom: -4px; left: 2px; background: rgba(248, 244, 236, 0.75); }
+    .dark .bg-page-1 { background: rgba(26, 31, 38, 0.75); }
+    .dark .bg-page-2 { background: rgba(26, 31, 38, 0.6); }
+    
+    .nav-bar { display: flex; justify-content: center; align-items: center; gap: 12px; padding: 8px 12px; border-top: 1px solid var(--border); flex-shrink: 0; }
+    .nav-btn { width: 40px; height: 40px; border-radius: 50%; border: none; background: var(--button-bg); color: #ffecd2; font-size: 16px; cursor: pointer; }
+    .nav-btn:disabled { background: rgba(0, 0, 0, 0.05); color: var(--text-secondary); opacity: 0.4; cursor: not-allowed; }
+    .dark .nav-btn:disabled { background: rgba(255, 255, 255, 0.05); }
+    
+    .progress-bar { flex: 1; max-width: 180px; height: 6px; background: rgba(0, 0, 0, 0.1); border-radius: 3px; overflow: hidden; }
+    .dark .progress-bar { background: rgba(255, 255, 255, 0.1); }
+    .progress-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.3s ease; }
+    
+    .loading { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center; z-index: 200; }
+    .loading.show { display: flex; }
+    .loading-box { background: var(--card-bg); padding: 30px 40px; border-radius: 16px; text-align: center; }
+    .spinner { width: 40px; height: 40px; border: 3px solid var(--accent); border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" onclick="toggleDarkMode()">🌙</button>
+  
+  <div id="inputScreen">
+    <div class="card">
+      <h1>📖 Rusça Okuma Kitabı</h1>
+      <p class="subtitle">Rusça metni yapıştır, otomatik çevirilecek (sadece 1 kez)</p>
+      
+      <div class="saved-info" id="savedInfo" style="display: none;">
+        <span>💾 Kayıtlı çeviri var (<span id="savedLineCount">0</span> satır)</span>
+        <button onclick="clearAllData()">Sil</button>
+      </div>
+      
+      <textarea id="inputText" placeholder="Rusça metni buraya yapıştırın...
+
+Örnek:
+Онур стоит в аэропорту.
+Вокруг люди.
+Он держит маленький рюкзак."></textarea>
+      
+      <button class="btn" id="startBtn" onclick="startBook()">📚 Kitabı Başlat</button>
+      <button class="btn btn-outline" id="continueBtn" style="display: none;" onclick="continueFromBookmark()">🔖 Kaldığım yerden devam et (Sayfa <span id="bookmarkPage">1</span>)</button>
+    </div>
+  </div>
+  
+  <div id="bookScreen">
+    <div class="top-bar">
+      <button onclick="goBack()">← Geri</button>
+      <div class="icons">
+        <button class="icon-btn" id="bookmarkBtn" onclick="saveBookmark()">🔖</button>
+        <button class="icon-btn" id="settingsBtn" onclick="toggleSettings()">⚙️</button>
+        <button class="icon-btn" onclick="toggleDarkMode()">🌙</button>
+      </div>
+    </div>
+    
+    <div class="lang-bar">
+      <button class="lang-toggle" onclick="toggleLangMode()">
+        <span id="ruLabel" class="active">🇷🇺 RU</span>
+        <span>⇄</span>
+        <span id="trLabel">🇹🇷 TR</span>
+      </button>
+      <span class="page-info">Sayfa <span id="currentPageNum">1</span> / <span id="totalPages">1</span><span id="bookmarkIndicator"></span></span>
+    </div>
+    
+    <div class="settings-panel" id="settingsPanel">
+      <span>🔊 Hız:</span>
+      <input type="range" min="0.3" max="1.2" step="0.1" value="0.8" id="speechRate" onchange="updateSpeechRate()">
+      <span id="speechRateValue">0.8x</span>
+    </div>
+    
+    <div class="book-container" id="bookContainer">
+      <div class="page-wrapper">
+        <div class="page" id="page">
+          <div class="page-spine"></div>
+          <div class="sentences" id="sentences"></div>
+        </div>
+        <div class="bg-page bg-page-1"></div>
+        <div class="bg-page bg-page-2"></div>
+      </div>
+    </div>
+    
+    <div class="nav-bar">
+      <button class="nav-btn" id="prevBtn" onclick="goToPage('prev')">←</button>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <button class="nav-btn" id="nextBtn" onclick="goToPage('next')">→</button>
+    </div>
+  </div>
+  
+  <div class="loading" id="loading">
+    <div class="loading-box">
+      <div class="spinner"></div>
+      <p id="loadingText">Yükleniyor...</p>
+    </div>
+  </div>
+
+  <script>
+    let sentences = [], pages = [], currentPage = 0, bookmarkedPage = null;
+    let langMode = 'ru', speechRate = 0.8, darkMode = false, revealedSentences = {};
+    const SENTENCES_PER_PAGE = 4;
+    const KEYS = { text: 'rbook_text', sentences: 'rbook_sentences', bookmark: 'rbook_bookmark', settings: 'rbook_settings' };
+    
+    document.addEventListener('DOMContentLoaded', () => { loadFromStorage(); setupSwipe(); });
+    
+    function save(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {} }
+    function load(key) { try { return JSON.parse(localStorage.getItem(key)); } catch(e) { return null; } }
+    
+    function loadFromStorage() {
+      const s = load(KEYS.settings) || {};
+      if (s.darkMode) { darkMode = true; document.body.classList.add('dark'); document.querySelector('.theme-toggle').textContent = '☀️'; }
+      if (s.speechRate) { speechRate = s.speechRate; document.getElementById('speechRate').value = speechRate; document.getElementById('speechRateValue').textContent = speechRate.toFixed(1) + 'x'; }
+      if (s.langMode) langMode = s.langMode;
+      
+      const savedText = load(KEYS.text);
+      if (savedText) document.getElementById('inputText').value = savedText;
+      
+      const savedSentences = load(KEYS.sentences);
+      if (savedSentences && savedSentences.length > 0) {
+        sentences = savedSentences;
+        document.getElementById('savedInfo').style.display = 'flex';
+        document.getElementById('savedLineCount').textContent = sentences.length;
+      }
+      
+      bookmarkedPage = load(KEYS.bookmark);
+      if (bookmarkedPage !== null && sentences.length > 0) {
+        document.getElementById('continueBtn').style.display = 'block';
+        document.getElementById('bookmarkPage').textContent = bookmarkedPage + 1;
+      }
+    }
+    
+    function saveSettings() { save(KEYS.settings, { darkMode, speechRate, langMode }); }
+    
+    function toggleDarkMode() {
+      darkMode = !darkMode;
+      document.body.classList.toggle('dark', darkMode);
+      document.querySelectorAll('.theme-toggle').forEach(b => b.textContent = darkMode ? '☀️' : '🌙');
+      saveSettings();
+    }
+    
+    function clearAllData() {
+      if (confirm('Tüm veriler silinecek. Emin misiniz?')) {
+        localStorage.removeItem(KEYS.text); localStorage.removeItem(KEYS.sentences); localStorage.removeItem(KEYS.bookmark);
+        document.getElementById('inputText').value = '';
+        document.getElementById('savedInfo').style.display = 'none';
+        document.getElementById('continueBtn').style.display = 'none';
+        sentences = []; bookmarkedPage = null;
+      }
+    }
+    
+    async function translateText(lines) {
+      const prompt = `Aşağıdaki Rusça cümleleri Türkçeye çevir. Her satır için sadece Türkçe çeviriyi yaz. Satır sayısı aynı kalmalı.\n\n${lines.join('\n')}`;
+      try {
+        const res = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 4000, messages: [{ role: "user", content: prompt }] })
+        });
+        const data = await res.json();
+        return (data.content?.[0]?.text || '').split('\n').filter(l => l.trim());
+      } catch (e) { return lines.map(() => '(çeviri hatası)'); }
+    }
+    
+    async function startBook() {
+      const inputText = document.getElementById('inputText').value.trim();
+      if (!inputText) { alert('Lütfen metin girin!'); return; }
+      
+      const lines = inputText.split('\n').filter(l => l.trim());
+      if (lines.length === 0) { alert('Metin bulunamadı!'); return; }
+      
+      save(KEYS.text, inputText);
+      
+      // Check if translation already exists for same text
+      if (sentences.length === lines.length && sentences.every((s, i) => s.ru === lines[i].trim())) {
+        openBook(0);
+        return;
+      }
+      
+      // Need to translate
+      showLoading('Çeviriliyor...');
+      const batchSize = 15;
+      const allTr = [];
+      
+      for (let i = 0; i < lines.length; i += batchSize) {
+        showLoading(`Çeviriliyor... ${Math.min(i + batchSize, lines.length)}/${lines.length}`);
+        const tr = await translateText(lines.slice(i, i + batchSize));
+        allTr.push(...tr);
+      }
+      
+      sentences = lines.map((ru, i) => ({ ru: ru.trim(), tr: allTr[i] || '' }));
+      save(KEYS.sentences, sentences);
+      
+      hideLoading();
+      document.getElementById('savedInfo').style.display = 'flex';
+      document.getElementById('savedLineCount').textContent = sentences.length;
+      openBook(0);
+    }
+    
+    function continueFromBookmark() {
+      if (sentences.length === 0) sentences = load(KEYS.sentences) || [];
+      if (sentences.length > 0 && bookmarkedPage !== null) openBook(bookmarkedPage);
+    }
+    
+    function openBook(startPage) {
+      pages = [];
+      for (let i = 0; i < sentences.length; i += SENTENCES_PER_PAGE) pages.push(sentences.slice(i, i + SENTENCES_PER_PAGE));
+      currentPage = Math.min(startPage, pages.length - 1);
+      revealedSentences = {};
+      document.getElementById('inputScreen').style.display = 'none';
+      document.getElementById('bookScreen').style.display = 'flex';
+      renderPage(); updateLangLabels();
+    }
+    
+    function goBack() {
+      document.getElementById('inputScreen').style.display = 'flex';
+      document.getElementById('bookScreen').style.display = 'none';
+      if (sentences.length > 0) {
+        document.getElementById('continueBtn').style.display = 'block';
+        document.getElementById('bookmarkPage').textContent = (bookmarkedPage || 0) + 1;
+      }
+    }
+    
+    function renderPage() {
+      const container = document.getElementById('sentences');
+      container.innerHTML = '';
+      const ps = pages[currentPage] || [];
+      
+      ps.forEach((s, idx) => {
+        const revealed = revealedSentences[`${currentPage}-${idx}`];
+        const main = langMode === 'ru' ? s.ru : s.tr;
+        const hidden = langMode === 'ru' ? s.tr : s.ru;
+        const mLang = langMode, hLang = langMode === 'ru' ? 'tr' : 'ru';
+        
+        const div = document.createElement('div');
+        div.className = 'sentence' + (revealed ? ' revealed' : '');
+        div.onclick = () => { revealedSentences[`${currentPage}-${idx}`] = !revealedSentences[`${currentPage}-${idx}`]; renderPage(); };
+        
+        div.innerHTML = `
+          <div class="sentence-main">
+            <p class="sentence-text">${main || '(metin yok)'}</p>
+            <button class="speak-btn" onclick="event.stopPropagation(); speak(\`${esc(main)}\`, '${mLang}')">🔊</button>
+          </div>
+          <div class="sentence-hidden">
+            <div class="sentence-hidden-inner">
+              <p class="sentence-hidden-text">${hidden || '(çeviri yok)'}</p>
+              <button class="speak-btn speak-btn-small" onclick="event.stopPropagation(); speak(\`${esc(hidden)}\`, '${hLang}')">🔊</button>
+            </div>
+          </div>
+          <p class="tap-hint">${langMode === 'ru' ? 'Türkçe için dokun' : 'Rusça için dokun'}</p>
+        `;
+        container.appendChild(div);
+      });
+      
+      document.getElementById('currentPageNum').textContent = currentPage + 1;
+      document.getElementById('totalPages').textContent = pages.length;
+      document.getElementById('progressFill').style.width = ((currentPage + 1) / pages.length * 100) + '%';
+      document.getElementById('prevBtn').disabled = currentPage === 0;
+      document.getElementById('nextBtn').disabled = currentPage === pages.length - 1;
+      document.getElementById('bookmarkIndicator').textContent = currentPage === bookmarkedPage ? ' 🔖' : '';
+      document.getElementById('bookmarkBtn').classList.toggle('active', currentPage === bookmarkedPage);
+    }
+    
+    function esc(t) { return (t || '').replace(/`/g, '\\`').replace(/\$/g, '\\$'); }
+    
+    function goToPage(dir) {
+      const np = dir === 'next' ? currentPage + 1 : currentPage - 1;
+      if (np < 0 || np >= pages.length) return;
+      document.getElementById('page').classList.add(dir === 'next' ? 'flip-next' : 'flip-prev');
+      setTimeout(() => { currentPage = np; renderPage(); document.getElementById('page').classList.remove('flip-next', 'flip-prev'); }, 300);
+    }
+    
+    function setupSwipe() {
+      let sx = 0, ex = 0;
+      const c = document.getElementById('bookContainer');
+      c.addEventListener('touchstart', e => sx = e.touches[0].clientX);
+      c.addEventListener('touchmove', e => ex = e.touches[0].clientX);
+      c.addEventListener('touchend', () => { const d = sx - ex; if (Math.abs(d) > 50) goToPage(d > 0 ? 'next' : 'prev'); });
+    }
+    
+    function toggleLangMode() { langMode = langMode === 'ru' ? 'tr' : 'ru'; revealedSentences = {}; updateLangLabels(); renderPage(); saveSettings(); }
+    function updateLangLabels() { document.getElementById('ruLabel').classList.toggle('active', langMode === 'ru'); document.getElementById('trLabel').classList.toggle('active', langMode === 'tr'); }
+    function saveBookmark() { bookmarkedPage = currentPage; save(KEYS.bookmark, bookmarkedPage); renderPage(); }
+    function toggleSettings() { document.getElementById('settingsPanel').classList.toggle('show'); document.getElementById('settingsBtn').classList.toggle('active'); }
+    function updateSpeechRate() { speechRate = parseFloat(document.getElementById('speechRate').value); document.getElementById('speechRateValue').textContent = speechRate.toFixed(1) + 'x'; saveSettings(); }
+    function speak(t, l) { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = l === 'ru' ? 'ru-RU' : 'tr-TR'; u.rate = speechRate; speechSynthesis.speak(u); }
+    function showLoading(t) { document.getElementById('loadingText').textContent = t; document.getElementById('loading').classList.add('show'); }
+    function hideLoading() { document.getElementById('loading').classList.remove('show'); }
+  </script>
+</body>
+</html>
