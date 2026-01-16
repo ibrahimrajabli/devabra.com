@@ -13,6 +13,7 @@
       --accent: #8b4513; --border: rgba(139, 69, 19, 0.15); --shadow: rgba(0,0,0,0.12);
       --button-bg: linear-gradient(135deg, #8b4513 0%, #654321 100%);
       --card-bg: rgba(255,255,255,0.85); --input-bg: #fffdf8;
+      --font-size: 14px;
     }
     
     .dark {
@@ -25,7 +26,7 @@
     
     body { margin: 0; padding: 0; font-family: Georgia, serif; background: var(--bg); color: var(--text); min-height: 100vh; min-height: 100dvh; transition: background 0.3s, color 0.3s; }
     
-    #inputScreen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 16px; padding-top: 60px; }
+    #inputScreen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 16px; padding-top: 40px; }
     .card { background: var(--card-bg); border-radius: 16px; padding: 20px; max-width: 500px; width: 100%; box-shadow: 0 10px 40px var(--shadow); border: 1px solid var(--border); }
     h1 { text-align: center; font-size: 1.4rem; margin: 0 0 8px 0; font-weight: 400; }
     .subtitle { text-align: center; color: var(--text-secondary); margin-bottom: 16px; font-size: 0.85rem; }
@@ -39,10 +40,7 @@
     
     .btn { display: block; width: 100%; margin-top: 12px; padding: 14px; font-size: 1rem; font-family: Georgia, serif; background: var(--button-bg); color: #ffecd2; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 15px var(--shadow); }
     .btn-outline { background: transparent; color: var(--accent); border: 1px solid var(--accent); box-shadow: none; }
-    .btn-danger { background: #c0392b; }
     .btn:disabled { opacity: 0.6; cursor: wait; }
-    
-    .theme-toggle { position: fixed; top: 16px; right: 16px; width: 44px; height: 44px; border-radius: 50%; border: none; background: var(--card-bg); font-size: 20px; cursor: pointer; box-shadow: 0 2px 10px var(--shadow); z-index: 100; }
     
     #bookScreen { display: none; height: 100vh; height: 100dvh; flex-direction: column; overflow: hidden; }
     .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
@@ -51,40 +49,46 @@
     .icon-btn { width: 30px; height: 30px; border-radius: 50%; border: none; background: var(--card-bg); font-size: 14px; cursor: pointer; }
     .icon-btn.active { background: var(--accent); }
     
-    .lang-bar { display: flex; justify-content: space-between; align-items: center; padding: 4px 10px; background: rgba(139, 69, 19, 0.03); flex-shrink: 0; }
-    .dark .lang-bar { background: rgba(212, 165, 116, 0.05); }
-    .lang-toggle { display: flex; align-items: center; gap: 4px; padding: 4px 10px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 15px; cursor: pointer; font-size: 11px; }
+    .control-bar { display: flex; justify-content: space-between; align-items: center; padding: 4px 10px; background: rgba(139, 69, 19, 0.03); flex-shrink: 0; gap: 8px; }
+    .dark .control-bar { background: rgba(212, 165, 116, 0.05); }
+    
+    .lang-toggle { display: flex; align-items: center; gap: 4px; padding: 4px 8px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 15px; cursor: pointer; font-size: 11px; }
     .lang-toggle span.active { color: var(--accent); }
     .lang-toggle span:not(.active) { color: var(--text-secondary); }
+    
+    .font-controls { display: flex; align-items: center; gap: 2px; }
+    .font-btn { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border); background: var(--card-bg); font-size: 12px; font-weight: bold; cursor: pointer; color: var(--text); display: flex; align-items: center; justify-content: center; }
+    .font-btn:active { background: var(--accent); color: white; }
+    
     .page-info { font-size: 11px; color: var(--text-secondary); }
     
-    .settings-panel { display: none; padding: 10px 14px; background: var(--card-bg); border-bottom: 1px solid var(--border); flex-shrink: 0; align-items: center; gap: 8px; }
+    .settings-panel { display: none; padding: 8px 14px; background: var(--card-bg); border-bottom: 1px solid var(--border); flex-shrink: 0; align-items: center; gap: 8px; }
     .settings-panel.show { display: flex; }
     .settings-panel span { font-size: 12px; color: var(--text-secondary); }
     .settings-panel input[type="range"] { flex: 1; accent-color: var(--accent); }
     
     .book-container { flex: 1; display: flex; padding: 6px; overflow: hidden; }
     .page-wrapper { flex: 1; position: relative; perspective: 1200px; }
-    .page { position: absolute; inset: 0; background: var(--page-bg); border-radius: 4px 12px 12px 4px; box-shadow: 4px 4px 20px var(--shadow); padding: 10px; display: flex; flex-direction: column; overflow: hidden; transition: transform 0.3s ease-out; }
+    .page { position: absolute; inset: 0; background: var(--page-bg); border-radius: 4px 12px 12px 4px; box-shadow: 4px 4px 20px var(--shadow); padding: 8px; display: flex; flex-direction: column; overflow: hidden; transition: transform 0.3s ease-out; }
     .page.flip-next { transform: rotateY(-12deg); transform-origin: left center; }
     .page.flip-prev { transform: rotateY(12deg); transform-origin: right center; }
     .page-spine { position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: linear-gradient(to right, rgba(0,0,0,0.06), transparent); pointer-events: none; }
     .dark .page-spine { background: linear-gradient(to right, rgba(0,0,0,0.25), transparent); }
     
-    .sentences { flex: 1; overflow: auto; display: flex; flex-direction: column; }
-    .sentence { flex: 1; min-height: 60px; margin-bottom: 6px; padding: 10px; border-radius: 8px; border-left: 3px solid transparent; transition: all 0.25s ease; cursor: pointer; display: flex; flex-direction: column; justify-content: center; }
+    .sentences { flex: 1; overflow: auto; display: flex; flex-direction: column; gap: 4px; }
+    .sentence { padding: 8px; border-radius: 6px; border-left: 3px solid transparent; transition: all 0.25s ease; cursor: pointer; }
     .sentence.revealed { background: rgba(139, 69, 19, 0.05); border-left-color: var(--accent); }
     .dark .sentence.revealed { background: rgba(212, 165, 116, 0.1); }
     .sentence-main { display: flex; align-items: flex-start; gap: 6px; }
-    .sentence-text { flex: 1; margin: 0; font-size: 14px; line-height: 1.6; }
-    .speak-btn { width: 30px; height: 30px; border-radius: 50%; border: none; background: rgba(139, 69, 19, 0.1); font-size: 13px; cursor: pointer; flex-shrink: 0; }
+    .sentence-text { flex: 1; margin: 0; font-size: var(--font-size); line-height: 1.5; }
+    .speak-btn { width: 28px; height: 28px; min-width: 28px; border-radius: 50%; border: none; background: rgba(139, 69, 19, 0.1); font-size: 12px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
     .dark .speak-btn { background: rgba(212, 165, 116, 0.15); }
     .sentence-hidden { max-height: 0; opacity: 0; overflow: hidden; transition: all 0.3s ease; }
-    .sentence.revealed .sentence-hidden { max-height: 80px; opacity: 1; }
+    .sentence.revealed .sentence-hidden { max-height: 100px; opacity: 1; }
     .sentence-hidden-inner { display: flex; align-items: flex-start; gap: 6px; margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--border); }
-    .sentence-hidden-text { flex: 1; margin: 0; font-size: 13px; color: var(--translation); font-style: italic; line-height: 1.5; }
-    .speak-btn-small { width: 26px; height: 26px; font-size: 11px; }
-    .tap-hint { margin: 3px 0 0 0; font-size: 10px; color: var(--text-secondary); opacity: 0.5; }
+    .sentence-hidden-text { flex: 1; margin: 0; font-size: calc(var(--font-size) - 1px); color: var(--translation); font-style: italic; line-height: 1.4; }
+    .speak-btn-small { width: 24px; height: 24px; min-width: 24px; font-size: 10px; }
+    .tap-hint { margin: 2px 0 0 0; font-size: 9px; color: var(--text-secondary); opacity: 0.5; }
     .sentence.revealed .tap-hint { display: none; }
     
     .bg-page { position: absolute; border-radius: 4px 12px 12px 4px; z-index: -1; }
@@ -112,19 +116,22 @@
   </style>
 </head>
 <body>
-  <button class="theme-toggle" onclick="toggleDarkMode()">🌙</button>
-  
   <div id="inputScreen">
     <div class="card">
       <h1>📖 Rusça Okuma Kitabı</h1>
-      <p class="subtitle">Rusça metni yapıştır, otomatik çevirilecek (sadece 1 kez)</p>
+      <p class="subtitle">Rusça metni yapıştır, otomatik çevrilecek</p>
       
       <div class="saved-info" id="savedInfo" style="display: none;">
         <span>💾 Kayıtlı çeviri var (<span id="savedLineCount">0</span> satır)</span>
         <button onclick="clearAllData()">Sil</button>
       </div>
       
-      <textarea id="inputText" placeholder="Rusça metni buraya yapıştırın..."></textarea>
+      <textarea id="inputText" placeholder="Rusça metni buraya yapıştırın...
+
+Örnek:
+Онур стоит в аэропорту.
+Вокруг люди.
+Он держит маленький рюкзак."></textarea>
       
       <button class="btn" id="startBtn" onclick="startBook()">📚 Kitabı Başlat</button>
       <button class="btn btn-outline" id="continueBtn" style="display: none;" onclick="continueFromBookmark()">🔖 Kaldığım yerden devam et (Sayfa <span id="bookmarkPage">1</span>)</button>
@@ -137,17 +144,23 @@
       <div class="icons">
         <button class="icon-btn" id="bookmarkBtn" onclick="saveBookmark()">🔖</button>
         <button class="icon-btn" id="settingsBtn" onclick="toggleSettings()">⚙️</button>
-        <button class="icon-btn" onclick="toggleDarkMode()">🌙</button>
+        <button class="icon-btn" id="darkModeBtn" onclick="toggleDarkMode()">🌙</button>
       </div>
     </div>
     
-    <div class="lang-bar">
+    <div class="control-bar">
       <button class="lang-toggle" onclick="toggleLangMode()">
-        <span id="ruLabel" class="active">🇷🇺 RU</span>
+        <span id="ruLabel" class="active">🇷🇺</span>
         <span>⇄</span>
-        <span id="trLabel">🇹🇷 TR</span>
+        <span id="trLabel">🇹🇷</span>
       </button>
-      <span class="page-info">Sayfa <span id="currentPageNum">1</span> / <span id="totalPages">1</span><span id="bookmarkIndicator"></span></span>
+      
+      <div class="font-controls">
+        <button class="font-btn" onclick="changeFontSize(-1)">A-</button>
+        <button class="font-btn" onclick="changeFontSize(1)">A+</button>
+      </div>
+      
+      <span class="page-info"><span id="currentPageNum">1</span>/<span id="totalPages">1</span><span id="bookmarkIndicator"></span></span>
     </div>
     
     <div class="settings-panel" id="settingsPanel">
@@ -185,11 +198,10 @@
 
   <script>
     let sentences = [], pages = [], currentPage = 0, bookmarkedPage = null;
-    let langMode = 'ru', speechRate = 0.8, darkMode = false, revealedSentences = {};
+    let langMode = 'ru', speechRate = 0.8, darkMode = false, fontSize = 14, revealedSentences = {};
     let translationCancelled = false;
-    let currentController = null;
     
-    const SENTENCES_PER_PAGE = 4;
+    const SENTENCES_PER_PAGE = 5;
     const KEYS = { text: 'rbook_text', sentences: 'rbook_sentences', bookmark: 'rbook_bookmark', settings: 'rbook_settings' };
     
     document.addEventListener('DOMContentLoaded', () => { loadFromStorage(); setupSwipe(); });
@@ -199,9 +211,10 @@
     
     function loadFromStorage() {
       const s = load(KEYS.settings) || {};
-      if (s.darkMode) { darkMode = true; document.body.classList.add('dark'); document.querySelector('.theme-toggle').textContent = '☀️'; }
+      if (s.darkMode) { darkMode = true; document.body.classList.add('dark'); }
       if (s.speechRate) { speechRate = s.speechRate; document.getElementById('speechRate').value = speechRate; document.getElementById('speechRateValue').textContent = speechRate.toFixed(1) + 'x'; }
       if (s.langMode) langMode = s.langMode;
+      if (s.fontSize) { fontSize = s.fontSize; document.documentElement.style.setProperty('--font-size', fontSize + 'px'); }
       
       const savedText = load(KEYS.text);
       if (savedText) document.getElementById('inputText').value = savedText;
@@ -218,14 +231,27 @@
         document.getElementById('continueBtn').style.display = 'block';
         document.getElementById('bookmarkPage').textContent = bookmarkedPage + 1;
       }
+      
+      updateDarkModeBtn();
     }
     
-    function saveSettings() { save(KEYS.settings, { darkMode, speechRate, langMode }); }
+    function saveSettings() { save(KEYS.settings, { darkMode, speechRate, langMode, fontSize }); }
     
     function toggleDarkMode() {
       darkMode = !darkMode;
       document.body.classList.toggle('dark', darkMode);
-      document.querySelectorAll('.theme-toggle').forEach(b => b.textContent = darkMode ? '☀️' : '🌙');
+      updateDarkModeBtn();
+      saveSettings();
+    }
+    
+    function updateDarkModeBtn() {
+      const btn = document.getElementById('darkModeBtn');
+      if (btn) btn.textContent = darkMode ? '☀️' : '🌙';
+    }
+    
+    function changeFontSize(delta) {
+      fontSize = Math.max(10, Math.min(22, fontSize + delta));
+      document.documentElement.style.setProperty('--font-size', fontSize + 'px');
       saveSettings();
     }
     
@@ -241,155 +267,80 @@
     
     function cancelTranslation() {
       translationCancelled = true;
-      if (currentController) {
-        currentController.abort();
-      }
       hideLoading();
     }
     
-    async function translateText(lines, retryCount = 0) {
-      const prompt = `Aşağıdaki Rusça cümleleri Türkçeye çevir. Her satır için sadece Türkçe çeviriyi yaz. Satır sayısı aynı kalmalı.\n\n${lines.join('\n')}`;
-      
-      currentController = new AbortController();
-      const timeoutId = setTimeout(() => currentController.abort(), 60000); // 60 second timeout
+    // MyMemory Free Translation API (no API key needed, CORS friendly)
+    async function translateSentence(text, retryCount = 0) {
+      const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=ru|tr`;
       
       try {
-        const res = await fetch("https://api.anthropic.com/v1/messages", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ 
-            model: "claude-sonnet-4-20250514", 
-            max_tokens: 4000, 
-            messages: [{ role: "user", content: prompt }] 
-          }),
-          signal: currentController.signal
-        });
-        
-        clearTimeout(timeoutId);
-        
-        if (!res.ok) {
-          throw new Error(`API error: ${res.status}`);
-        }
-        
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        const result = (data.content?.[0]?.text || '').split('\n').filter(l => l.trim());
         
-        // If we got fewer translations than lines, pad with empty strings
-        while (result.length < lines.length) {
-          result.push('(çeviri alınamadı)');
+        if (data.responseStatus === 200 && data.responseData && data.responseData.translatedText) {
+          return data.responseData.translatedText;
         }
-        
-        return result;
+        throw new Error('No translation');
       } catch (e) {
-        clearTimeout(timeoutId);
-        
-        if (e.name === 'AbortError') {
-          if (translationCancelled) {
-            throw new Error('cancelled');
-          }
-          // Timeout - retry
-          if (retryCount < 2) {
-            showError(`Zaman aşımı, tekrar deneniyor... (${retryCount + 1}/3)`);
-            await sleep(2000);
-            return translateText(lines, retryCount + 1);
-          }
-        }
-        
-        // Retry on other errors
         if (retryCount < 2) {
-          showError(`Hata: ${e.message}. Tekrar deneniyor... (${retryCount + 1}/3)`);
-          await sleep(3000);
-          return translateText(lines, retryCount + 1);
+          await sleep(1000);
+          return translateSentence(text, retryCount + 1);
         }
-        
-        // After 3 retries, return placeholder translations
-        console.error('Translation failed:', e);
-        return lines.map(() => '(çeviri hatası)');
+        return '(çeviri hatası)';
       }
     }
     
     function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-    
-    function showError(text) {
-      document.getElementById('errorText').textContent = text;
-      document.getElementById('errorText').style.display = 'block';
-    }
+    function showError(text) { document.getElementById('errorText').textContent = text; document.getElementById('errorText').style.display = 'block'; }
     
     async function startBook() {
       const inputText = document.getElementById('inputText').value.trim();
       if (!inputText) { alert('Lütfen metin girin!'); return; }
       
+      save(KEYS.text, inputText);
+      
       const lines = inputText.split('\n').filter(l => l.trim());
       if (lines.length === 0) { alert('Metin bulunamadı!'); return; }
       
-      save(KEYS.text, inputText);
-      
-      // Check if translation already exists for same text
+      // Check if we have saved sentences for same text
       if (sentences.length === lines.length && sentences.every((s, i) => s.ru === lines[i].trim())) {
         openBook(0);
         return;
       }
       
-      // Reset state
+      // Translate all lines
       translationCancelled = false;
       document.getElementById('errorText').style.display = 'none';
-      
       showLoading('Çeviriliyor...');
       
-      const batchSize = 10; // Smaller batches for stability
-      const allTr = [];
-      let failedBatches = 0;
+      const newSentences = [];
       
-      for (let i = 0; i < lines.length; i += batchSize) {
-        if (translationCancelled) {
-          hideLoading();
-          return;
+      for (let i = 0; i < lines.length; i++) {
+        if (translationCancelled) { hideLoading(); return; }
+        
+        showLoading(`Çeviriliyor... ${i + 1}/${lines.length}`);
+        
+        const ru = lines[i].trim();
+        const tr = await translateSentence(ru);
+        newSentences.push({ ru, tr });
+        
+        // Save progress every 5 sentences
+        if (i % 5 === 0) {
+          save(KEYS.sentences, newSentences);
         }
         
-        const batchNum = Math.floor(i / batchSize) + 1;
-        const totalBatches = Math.ceil(lines.length / batchSize);
-        showLoading(`Çeviriliyor... ${Math.min(i + batchSize, lines.length)}/${lines.length}\n(Grup ${batchNum}/${totalBatches})`);
-        
-        const batch = lines.slice(i, i + batchSize);
-        
-        try {
-          const tr = await translateText(batch);
-          allTr.push(...tr);
-          
-          // Save progress after each batch
-          const partialSentences = lines.slice(0, allTr.length).map((ru, idx) => ({ 
-            ru: ru.trim(), 
-            tr: allTr[idx] || '' 
-          }));
-          save(KEYS.sentences, partialSentences);
-          
-        } catch (e) {
-          if (e.message === 'cancelled') {
-            hideLoading();
-            return;
-          }
-          failedBatches++;
-          // Add placeholders for failed batch
-          for (let j = 0; j < batch.length; j++) {
-            allTr.push('(çeviri hatası)');
-          }
-        }
-        
-        // Small delay between batches to avoid rate limiting
-        if (i + batchSize < lines.length) {
-          await sleep(500);
+        // Small delay to avoid rate limiting
+        if (i < lines.length - 1) {
+          await sleep(300);
         }
       }
       
-      sentences = lines.map((ru, i) => ({ ru: ru.trim(), tr: allTr[i] || '' }));
+      sentences = newSentences;
       save(KEYS.sentences, sentences);
       
       hideLoading();
-      
-      if (failedBatches > 0) {
-        alert(`Çeviri tamamlandı, ancak ${failedBatches} grup çevrilemedi. Eksik çeviriler "(çeviri hatası)" olarak gösterilecek.`);
-      }
-      
       document.getElementById('savedInfo').style.display = 'flex';
       document.getElementById('savedLineCount').textContent = sentences.length;
       openBook(0);
@@ -432,21 +383,43 @@
         
         const div = document.createElement('div');
         div.className = 'sentence' + (revealed ? ' revealed' : '');
-        div.onclick = () => { revealedSentences[`${currentPage}-${idx}`] = !revealedSentences[`${currentPage}-${idx}`]; renderPage(); };
         
-        div.innerHTML = `
-          <div class="sentence-main">
-            <p class="sentence-text">${escHtml(main) || '(metin yok)'}</p>
-            <button class="speak-btn" onclick="event.stopPropagation(); speak(\`${esc(main)}\`, '${mLang}')">🔊</button>
-          </div>
-          <div class="sentence-hidden">
-            <div class="sentence-hidden-inner">
-              <p class="sentence-hidden-text">${escHtml(hidden) || '(çeviri yok)'}</p>
-              <button class="speak-btn speak-btn-small" onclick="event.stopPropagation(); speak(\`${esc(hidden)}\`, '${hLang}')">🔊</button>
-            </div>
-          </div>
-          <p class="tap-hint">${langMode === 'ru' ? 'Türkçe için dokun' : 'Rusça için dokun'}</p>
-        `;
+        const mainDiv = document.createElement('div');
+        mainDiv.className = 'sentence-main';
+        mainDiv.innerHTML = `<p class="sentence-text">${escHtml(main) || '(metin yok)'}</p>`;
+        
+        const speakBtn = document.createElement('button');
+        speakBtn.className = 'speak-btn';
+        speakBtn.textContent = '🔊';
+        speakBtn.onclick = function(e) { e.preventDefault(); e.stopPropagation(); speak(main, mLang); };
+        mainDiv.appendChild(speakBtn);
+        div.appendChild(mainDiv);
+        
+        const hiddenDiv = document.createElement('div');
+        hiddenDiv.className = 'sentence-hidden';
+        const hiddenInner = document.createElement('div');
+        hiddenInner.className = 'sentence-hidden-inner';
+        hiddenInner.innerHTML = `<p class="sentence-hidden-text">${escHtml(hidden) || '(çeviri yok)'}</p>`;
+        
+        const speakBtnSmall = document.createElement('button');
+        speakBtnSmall.className = 'speak-btn speak-btn-small';
+        speakBtnSmall.textContent = '🔊';
+        speakBtnSmall.onclick = function(e) { e.preventDefault(); e.stopPropagation(); speak(hidden, hLang); };
+        hiddenInner.appendChild(speakBtnSmall);
+        hiddenDiv.appendChild(hiddenInner);
+        div.appendChild(hiddenDiv);
+        
+        const hint = document.createElement('p');
+        hint.className = 'tap-hint';
+        hint.textContent = langMode === 'ru' ? 'Türkçe için dokun' : 'Rusça için dokun';
+        div.appendChild(hint);
+        
+        div.onclick = function(e) {
+          if (e.target.classList.contains('speak-btn')) return;
+          revealedSentences[`${currentPage}-${idx}`] = !revealedSentences[`${currentPage}-${idx}`];
+          renderPage();
+        };
+        
         container.appendChild(div);
       });
       
@@ -459,7 +432,6 @@
       document.getElementById('bookmarkBtn').classList.toggle('active', currentPage === bookmarkedPage);
     }
     
-    function esc(t) { return (t || '').replace(/`/g, '\\`').replace(/\$/g, '\\$'); }
     function escHtml(t) { return (t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
     
     function goToPage(dir) {
@@ -472,9 +444,9 @@
     function setupSwipe() {
       let sx = 0, ex = 0;
       const c = document.getElementById('bookContainer');
-      c.addEventListener('touchstart', e => sx = e.touches[0].clientX);
-      c.addEventListener('touchmove', e => ex = e.touches[0].clientX);
-      c.addEventListener('touchend', () => { const d = sx - ex; if (Math.abs(d) > 50) goToPage(d > 0 ? 'next' : 'prev'); });
+      c.addEventListener('touchstart', e => sx = e.touches[0].clientX, { passive: true });
+      c.addEventListener('touchmove', e => ex = e.touches[0].clientX, { passive: true });
+      c.addEventListener('touchend', () => { const d = sx - ex; if (Math.abs(d) > 50) goToPage(d > 0 ? 'next' : 'prev'); }, { passive: true });
     }
     
     function toggleLangMode() { langMode = langMode === 'ru' ? 'tr' : 'ru'; revealedSentences = {}; updateLangLabels(); renderPage(); saveSettings(); }
