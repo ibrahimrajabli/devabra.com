@@ -5,134 +5,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Rusça Okuma Kitabı</title>
   <style>
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     
     :root {
-      --bg: #f5f0e8;
-      --page-bg: linear-gradient(to bottom, #fdfbf7, #f8f4ec);
-      --text: #2c1810;
-      --text-secondary: #5a4a3a;
-      --translation: #6b5344;
-      --accent: #8b4513;
-      --border: rgba(139, 69, 19, 0.15);
-      --shadow: rgba(0,0,0,0.12);
+      --bg: #f5f0e8; --page-bg: linear-gradient(to bottom, #fdfbf7, #f8f4ec);
+      --text: #2c1810; --text-secondary: #5a4a3a; --translation: #6b5344;
+      --accent: #8b4513; --border: rgba(139, 69, 19, 0.15); --shadow: rgba(0,0,0,0.12);
       --button-bg: linear-gradient(135deg, #8b4513 0%, #654321 100%);
-      --card-bg: rgba(255,255,255,0.85);
-      --input-bg: #fffdf8;
+      --card-bg: rgba(255,255,255,0.85); --input-bg: #fffdf8;
     }
     
     .dark {
-      --bg: #0d1117;
-      --page-bg: linear-gradient(to bottom, #1a1f26, #21272e);
-      --text: #e6e1d9;
-      --text-secondary: #9a8a7a;
-      --translation: #c4b59d;
-      --accent: #d4a574;
-      --border: rgba(212, 165, 116, 0.15);
-      --shadow: rgba(0,0,0,0.4);
+      --bg: #0d1117; --page-bg: linear-gradient(to bottom, #1a1f26, #21272e);
+      --text: #e6e1d9; --text-secondary: #9a8a7a; --translation: #c4b59d;
+      --accent: #d4a574; --border: rgba(212, 165, 116, 0.15); --shadow: rgba(0,0,0,0.4);
       --button-bg: linear-gradient(135deg, #5c3d1e 0%, #3d2914 100%);
-      --card-bg: rgba(26,31,38,0.95);
-      --input-bg: #1a1f26;
+      --card-bg: rgba(26,31,38,0.95); --input-bg: #1a1f26;
     }
     
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: Georgia, serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      min-height: 100dvh;
-      transition: background 0.3s, color 0.3s;
-    }
+    body { margin: 0; padding: 0; font-family: Georgia, serif; background: var(--bg); color: var(--text); min-height: 100vh; min-height: 100dvh; transition: background 0.3s, color 0.3s; }
     
-    #inputScreen {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 16px;
-      padding-top: 60px;
-    }
-    
-    .card {
-      background: var(--card-bg);
-      border-radius: 16px;
-      padding: 20px;
-      max-width: 500px;
-      width: 100%;
-      box-shadow: 0 10px 40px var(--shadow);
-      border: 1px solid var(--border);
-    }
-    
+    #inputScreen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 16px; padding-top: 60px; }
+    .card { background: var(--card-bg); border-radius: 16px; padding: 20px; max-width: 500px; width: 100%; box-shadow: 0 10px 40px var(--shadow); border: 1px solid var(--border); }
     h1 { text-align: center; font-size: 1.4rem; margin: 0 0 8px 0; font-weight: 400; }
     .subtitle { text-align: center; color: var(--text-secondary); margin-bottom: 16px; font-size: 0.85rem; }
     
-    .saved-info {
-      background: rgba(139, 69, 19, 0.05);
-      padding: 8px 12px;
-      border-radius: 8px;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 12px;
-    }
+    .saved-info { background: rgba(139, 69, 19, 0.05); padding: 8px 12px; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; }
     .dark .saved-info { background: rgba(212, 165, 116, 0.1); }
     .saved-info span { color: var(--accent); }
     .saved-info button { background: transparent; border: none; color: var(--text-secondary); font-size: 11px; cursor: pointer; text-decoration: underline; }
     
-    textarea {
-      width: 100%;
-      height: 250px;
-      padding: 12px;
-      font-size: 14px;
-      line-height: 1.6;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      resize: vertical;
-      font-family: Georgia, serif;
-      background: var(--input-bg);
-      color: var(--text);
-    }
+    textarea { width: 100%; height: 250px; padding: 12px; font-size: 14px; line-height: 1.6; border: 1px solid var(--border); border-radius: 10px; resize: vertical; font-family: Georgia, serif; background: var(--input-bg); color: var(--text); }
     
-    .btn {
-      display: block;
-      width: 100%;
-      margin-top: 12px;
-      padding: 14px;
-      font-size: 1rem;
-      font-family: Georgia, serif;
-      background: var(--button-bg);
-      color: #ffecd2;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      box-shadow: 0 4px 15px var(--shadow);
-    }
+    .btn { display: block; width: 100%; margin-top: 12px; padding: 14px; font-size: 1rem; font-family: Georgia, serif; background: var(--button-bg); color: #ffecd2; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 15px var(--shadow); }
     .btn-outline { background: transparent; color: var(--accent); border: 1px solid var(--accent); box-shadow: none; }
+    .btn-danger { background: #c0392b; }
     .btn:disabled { opacity: 0.6; cursor: wait; }
     
-    .theme-toggle {
-      position: fixed;
-      top: 16px;
-      right: 16px;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      border: none;
-      background: var(--card-bg);
-      font-size: 20px;
-      cursor: pointer;
-      box-shadow: 0 2px 10px var(--shadow);
-      z-index: 100;
-    }
+    .theme-toggle { position: fixed; top: 16px; right: 16px; width: 44px; height: 44px; border-radius: 50%; border: none; background: var(--card-bg); font-size: 20px; cursor: pointer; box-shadow: 0 2px 10px var(--shadow); z-index: 100; }
     
     #bookScreen { display: none; height: 100vh; height: 100dvh; flex-direction: column; overflow: hidden; }
-    
     .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
     .top-bar button { background: transparent; border: none; color: var(--text-secondary); font-size: 13px; cursor: pointer; padding: 4px; }
     .top-bar .icons { display: flex; gap: 4px; }
@@ -153,42 +65,25 @@
     
     .book-container { flex: 1; display: flex; padding: 6px; overflow: hidden; }
     .page-wrapper { flex: 1; position: relative; perspective: 1200px; }
-    
-    .page {
-      position: absolute;
-      inset: 0;
-      background: var(--page-bg);
-      border-radius: 4px 12px 12px 4px;
-      box-shadow: 4px 4px 20px var(--shadow);
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      transition: transform 0.3s ease-out;
-    }
+    .page { position: absolute; inset: 0; background: var(--page-bg); border-radius: 4px 12px 12px 4px; box-shadow: 4px 4px 20px var(--shadow); padding: 10px; display: flex; flex-direction: column; overflow: hidden; transition: transform 0.3s ease-out; }
     .page.flip-next { transform: rotateY(-12deg); transform-origin: left center; }
     .page.flip-prev { transform: rotateY(12deg); transform-origin: right center; }
-    
     .page-spine { position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: linear-gradient(to right, rgba(0,0,0,0.06), transparent); pointer-events: none; }
     .dark .page-spine { background: linear-gradient(to right, rgba(0,0,0,0.25), transparent); }
     
     .sentences { flex: 1; overflow: auto; display: flex; flex-direction: column; }
-    
     .sentence { flex: 1; min-height: 60px; margin-bottom: 6px; padding: 10px; border-radius: 8px; border-left: 3px solid transparent; transition: all 0.25s ease; cursor: pointer; display: flex; flex-direction: column; justify-content: center; }
     .sentence.revealed { background: rgba(139, 69, 19, 0.05); border-left-color: var(--accent); }
     .dark .sentence.revealed { background: rgba(212, 165, 116, 0.1); }
-    
     .sentence-main { display: flex; align-items: flex-start; gap: 6px; }
     .sentence-text { flex: 1; margin: 0; font-size: 14px; line-height: 1.6; }
     .speak-btn { width: 30px; height: 30px; border-radius: 50%; border: none; background: rgba(139, 69, 19, 0.1); font-size: 13px; cursor: pointer; flex-shrink: 0; }
     .dark .speak-btn { background: rgba(212, 165, 116, 0.15); }
-    
     .sentence-hidden { max-height: 0; opacity: 0; overflow: hidden; transition: all 0.3s ease; }
     .sentence.revealed .sentence-hidden { max-height: 80px; opacity: 1; }
     .sentence-hidden-inner { display: flex; align-items: flex-start; gap: 6px; margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--border); }
     .sentence-hidden-text { flex: 1; margin: 0; font-size: 13px; color: var(--translation); font-style: italic; line-height: 1.5; }
     .speak-btn-small { width: 26px; height: 26px; font-size: 11px; }
-    
     .tap-hint { margin: 3px 0 0 0; font-size: 10px; color: var(--text-secondary); opacity: 0.5; }
     .sentence.revealed .tap-hint { display: none; }
     
@@ -202,16 +97,18 @@
     .nav-btn { width: 40px; height: 40px; border-radius: 50%; border: none; background: var(--button-bg); color: #ffecd2; font-size: 16px; cursor: pointer; }
     .nav-btn:disabled { background: rgba(0, 0, 0, 0.05); color: var(--text-secondary); opacity: 0.4; cursor: not-allowed; }
     .dark .nav-btn:disabled { background: rgba(255, 255, 255, 0.05); }
-    
     .progress-bar { flex: 1; max-width: 180px; height: 6px; background: rgba(0, 0, 0, 0.1); border-radius: 3px; overflow: hidden; }
     .dark .progress-bar { background: rgba(255, 255, 255, 0.1); }
     .progress-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.3s ease; }
     
     .loading { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center; z-index: 200; }
     .loading.show { display: flex; }
-    .loading-box { background: var(--card-bg); padding: 30px 40px; border-radius: 16px; text-align: center; }
+    .loading-box { background: var(--card-bg); padding: 30px 40px; border-radius: 16px; text-align: center; max-width: 300px; }
     .spinner { width: 40px; height: 40px; border: 3px solid var(--accent); border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
     @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-box p { margin: 0 0 16px 0; }
+    .loading-box .cancel-btn { padding: 10px 20px; background: #c0392b; color: white; border: none; border-radius: 8px; cursor: pointer; font-family: Georgia, serif; }
+    .error-text { color: #c0392b; font-size: 12px; margin-top: 8px; }
   </style>
 </head>
 <body>
@@ -227,12 +124,7 @@
         <button onclick="clearAllData()">Sil</button>
       </div>
       
-      <textarea id="inputText" placeholder="Rusça metni buraya yapıştırın...
-
-Örnek:
-Онур стоит в аэропорту.
-Вокруг люди.
-Он держит маленький рюкзак."></textarea>
+      <textarea id="inputText" placeholder="Rusça metni buraya yapıştırın..."></textarea>
       
       <button class="btn" id="startBtn" onclick="startBook()">📚 Kitabı Başlat</button>
       <button class="btn btn-outline" id="continueBtn" style="display: none;" onclick="continueFromBookmark()">🔖 Kaldığım yerden devam et (Sayfa <span id="bookmarkPage">1</span>)</button>
@@ -286,12 +178,17 @@
     <div class="loading-box">
       <div class="spinner"></div>
       <p id="loadingText">Yükleniyor...</p>
+      <p class="error-text" id="errorText" style="display: none;"></p>
+      <button class="cancel-btn" onclick="cancelTranslation()">İptal Et</button>
     </div>
   </div>
 
   <script>
     let sentences = [], pages = [], currentPage = 0, bookmarkedPage = null;
     let langMode = 'ru', speechRate = 0.8, darkMode = false, revealedSentences = {};
+    let translationCancelled = false;
+    let currentController = null;
+    
     const SENTENCES_PER_PAGE = 4;
     const KEYS = { text: 'rbook_text', sentences: 'rbook_sentences', bookmark: 'rbook_bookmark', settings: 'rbook_settings' };
     
@@ -342,16 +239,80 @@
       }
     }
     
-    async function translateText(lines) {
+    function cancelTranslation() {
+      translationCancelled = true;
+      if (currentController) {
+        currentController.abort();
+      }
+      hideLoading();
+    }
+    
+    async function translateText(lines, retryCount = 0) {
       const prompt = `Aşağıdaki Rusça cümleleri Türkçeye çevir. Her satır için sadece Türkçe çeviriyi yaz. Satır sayısı aynı kalmalı.\n\n${lines.join('\n')}`;
+      
+      currentController = new AbortController();
+      const timeoutId = setTimeout(() => currentController.abort(), 60000); // 60 second timeout
+      
       try {
         const res = await fetch("https://api.anthropic.com/v1/messages", {
-          method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 4000, messages: [{ role: "user", content: prompt }] })
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            model: "claude-sonnet-4-20250514", 
+            max_tokens: 4000, 
+            messages: [{ role: "user", content: prompt }] 
+          }),
+          signal: currentController.signal
         });
+        
+        clearTimeout(timeoutId);
+        
+        if (!res.ok) {
+          throw new Error(`API error: ${res.status}`);
+        }
+        
         const data = await res.json();
-        return (data.content?.[0]?.text || '').split('\n').filter(l => l.trim());
-      } catch (e) { return lines.map(() => '(çeviri hatası)'); }
+        const result = (data.content?.[0]?.text || '').split('\n').filter(l => l.trim());
+        
+        // If we got fewer translations than lines, pad with empty strings
+        while (result.length < lines.length) {
+          result.push('(çeviri alınamadı)');
+        }
+        
+        return result;
+      } catch (e) {
+        clearTimeout(timeoutId);
+        
+        if (e.name === 'AbortError') {
+          if (translationCancelled) {
+            throw new Error('cancelled');
+          }
+          // Timeout - retry
+          if (retryCount < 2) {
+            showError(`Zaman aşımı, tekrar deneniyor... (${retryCount + 1}/3)`);
+            await sleep(2000);
+            return translateText(lines, retryCount + 1);
+          }
+        }
+        
+        // Retry on other errors
+        if (retryCount < 2) {
+          showError(`Hata: ${e.message}. Tekrar deneniyor... (${retryCount + 1}/3)`);
+          await sleep(3000);
+          return translateText(lines, retryCount + 1);
+        }
+        
+        // After 3 retries, return placeholder translations
+        console.error('Translation failed:', e);
+        return lines.map(() => '(çeviri hatası)');
+      }
+    }
+    
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+    
+    function showError(text) {
+      document.getElementById('errorText').textContent = text;
+      document.getElementById('errorText').style.display = 'block';
     }
     
     async function startBook() {
@@ -369,21 +330,66 @@
         return;
       }
       
-      // Need to translate
+      // Reset state
+      translationCancelled = false;
+      document.getElementById('errorText').style.display = 'none';
+      
       showLoading('Çeviriliyor...');
-      const batchSize = 15;
+      
+      const batchSize = 10; // Smaller batches for stability
       const allTr = [];
+      let failedBatches = 0;
       
       for (let i = 0; i < lines.length; i += batchSize) {
-        showLoading(`Çeviriliyor... ${Math.min(i + batchSize, lines.length)}/${lines.length}`);
-        const tr = await translateText(lines.slice(i, i + batchSize));
-        allTr.push(...tr);
+        if (translationCancelled) {
+          hideLoading();
+          return;
+        }
+        
+        const batchNum = Math.floor(i / batchSize) + 1;
+        const totalBatches = Math.ceil(lines.length / batchSize);
+        showLoading(`Çeviriliyor... ${Math.min(i + batchSize, lines.length)}/${lines.length}\n(Grup ${batchNum}/${totalBatches})`);
+        
+        const batch = lines.slice(i, i + batchSize);
+        
+        try {
+          const tr = await translateText(batch);
+          allTr.push(...tr);
+          
+          // Save progress after each batch
+          const partialSentences = lines.slice(0, allTr.length).map((ru, idx) => ({ 
+            ru: ru.trim(), 
+            tr: allTr[idx] || '' 
+          }));
+          save(KEYS.sentences, partialSentences);
+          
+        } catch (e) {
+          if (e.message === 'cancelled') {
+            hideLoading();
+            return;
+          }
+          failedBatches++;
+          // Add placeholders for failed batch
+          for (let j = 0; j < batch.length; j++) {
+            allTr.push('(çeviri hatası)');
+          }
+        }
+        
+        // Small delay between batches to avoid rate limiting
+        if (i + batchSize < lines.length) {
+          await sleep(500);
+        }
       }
       
       sentences = lines.map((ru, i) => ({ ru: ru.trim(), tr: allTr[i] || '' }));
       save(KEYS.sentences, sentences);
       
       hideLoading();
+      
+      if (failedBatches > 0) {
+        alert(`Çeviri tamamlandı, ancak ${failedBatches} grup çevrilemedi. Eksik çeviriler "(çeviri hatası)" olarak gösterilecek.`);
+      }
+      
       document.getElementById('savedInfo').style.display = 'flex';
       document.getElementById('savedLineCount').textContent = sentences.length;
       openBook(0);
@@ -430,12 +436,12 @@
         
         div.innerHTML = `
           <div class="sentence-main">
-            <p class="sentence-text">${main || '(metin yok)'}</p>
+            <p class="sentence-text">${escHtml(main) || '(metin yok)'}</p>
             <button class="speak-btn" onclick="event.stopPropagation(); speak(\`${esc(main)}\`, '${mLang}')">🔊</button>
           </div>
           <div class="sentence-hidden">
             <div class="sentence-hidden-inner">
-              <p class="sentence-hidden-text">${hidden || '(çeviri yok)'}</p>
+              <p class="sentence-hidden-text">${escHtml(hidden) || '(çeviri yok)'}</p>
               <button class="speak-btn speak-btn-small" onclick="event.stopPropagation(); speak(\`${esc(hidden)}\`, '${hLang}')">🔊</button>
             </div>
           </div>
@@ -454,6 +460,7 @@
     }
     
     function esc(t) { return (t || '').replace(/`/g, '\\`').replace(/\$/g, '\\$'); }
+    function escHtml(t) { return (t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
     
     function goToPage(dir) {
       const np = dir === 'next' ? currentPage + 1 : currentPage - 1;
@@ -477,7 +484,7 @@
     function updateSpeechRate() { speechRate = parseFloat(document.getElementById('speechRate').value); document.getElementById('speechRateValue').textContent = speechRate.toFixed(1) + 'x'; saveSettings(); }
     function speak(t, l) { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = l === 'ru' ? 'ru-RU' : 'tr-TR'; u.rate = speechRate; speechSynthesis.speak(u); }
     function showLoading(t) { document.getElementById('loadingText').textContent = t; document.getElementById('loading').classList.add('show'); }
-    function hideLoading() { document.getElementById('loading').classList.remove('show'); }
+    function hideLoading() { document.getElementById('loading').classList.remove('show'); document.getElementById('errorText').style.display = 'none'; }
   </script>
 </body>
 </html>
