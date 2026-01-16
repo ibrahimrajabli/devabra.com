@@ -34,7 +34,7 @@
     .saved-info { background: rgba(139, 69, 19, 0.05); padding: 8px 12px; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; }
     .dark .saved-info { background: rgba(212, 165, 116, 0.1); }
     .saved-info span { color: var(--accent); }
-    .saved-info button { background: transparent; border: none; color: var(--text-secondary); font-size: 11px; cursor: pointer; text-decoration: underline; }
+    .saved-info .delete-btn { background: #c0392b; border: none; color: white; font-size: 11px; cursor: pointer; padding: 4px 10px; border-radius: 4px; }
     
     textarea { width: 100%; height: 250px; padding: 12px; font-size: 14px; line-height: 1.6; border: 1px solid var(--border); border-radius: 10px; resize: vertical; font-family: Georgia, serif; background: var(--input-bg); color: var(--text); }
     
@@ -75,13 +75,13 @@
     .page-spine { position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: linear-gradient(to right, rgba(0,0,0,0.06), transparent); pointer-events: none; }
     .dark .page-spine { background: linear-gradient(to right, rgba(0,0,0,0.25), transparent); }
     
-    .sentences { flex: 1; overflow: auto; display: flex; flex-direction: column; gap: 4px; }
-    .sentence { padding: 8px; border-radius: 6px; border-left: 3px solid transparent; transition: all 0.25s ease; cursor: pointer; }
+    .sentences { flex: 1; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; gap: 2px; -webkit-overflow-scrolling: touch; }
+    .sentence { flex-shrink: 0; min-height: 40px; padding: 6px 8px; border-radius: 6px; border-left: 3px solid transparent; transition: all 0.25s ease; cursor: pointer; display: flex; flex-direction: column; justify-content: center; }
     .sentence.revealed { background: rgba(139, 69, 19, 0.05); border-left-color: var(--accent); }
     .dark .sentence.revealed { background: rgba(212, 165, 116, 0.1); }
     .sentence-main { display: flex; align-items: flex-start; gap: 6px; }
-    .sentence-text { flex: 1; margin: 0; font-size: var(--font-size); line-height: 1.5; }
-    .speak-btn { width: 28px; height: 28px; min-width: 28px; border-radius: 50%; border: none; background: rgba(139, 69, 19, 0.1); font-size: 12px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .sentence-text { flex: 1; margin: 0; font-size: var(--font-size); line-height: 1.4; }
+    .speak-btn { width: 28px; height: 28px; min-width: 28px; border-radius: 50%; border: none; background: rgba(139, 69, 19, 0.1); font-size: 12px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; touch-action: manipulation; -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
     .dark .speak-btn { background: rgba(212, 165, 116, 0.15); }
     .sentence-hidden { max-height: 0; opacity: 0; overflow: hidden; transition: all 0.3s ease; }
     .sentence.revealed .sentence-hidden { max-height: 100px; opacity: 1; }
@@ -123,7 +123,7 @@
       
       <div class="saved-info" id="savedInfo" style="display: none;">
         <span>💾 Kayıtlı çeviri var (<span id="savedLineCount">0</span> satır)</span>
-        <button onclick="clearAllData()">Sil</button>
+        <button class="delete-btn" id="deleteBtn">🗑️ Sil</button>
       </div>
       
       <textarea id="inputText" placeholder="Rusça metni buraya yapıştırın...
@@ -201,10 +201,30 @@
     let langMode = 'ru', speechRate = 0.8, darkMode = false, fontSize = 14, revealedSentences = {};
     let translationCancelled = false;
     
-    const SENTENCES_PER_PAGE = 5;
+    let SENTENCES_PER_PAGE = 6; // Will be calculated dynamically
+    
+    function calculateSentencesPerPage() {
+      const container = document.getElementById('bookContainer');
+      if (!container) return 6;
+      
+      const containerHeight = container.clientHeight || window.innerHeight * 0.65;
+      const sentenceHeight = 50; // Approximate height per sentence
+      const count = Math.floor(containerHeight / sentenceHeight);
+      return Math.max(3, Math.min(12, count)); // Between 3 and 12
+    }
     const KEYS = { text: 'rbook_text', sentences: 'rbook_sentences', bookmark: 'rbook_bookmark', settings: 'rbook_settings' };
     
-    document.addEventListener('DOMContentLoaded', () => { loadFromStorage(); setupSwipe(); });
+    document.addEventListener('DOMContentLoaded', () => { 
+      loadFromStorage(); 
+      setupSwipe(); 
+      
+      // Delete button event listener
+      document.getElementById('deleteBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        clearAllData();
+      });
+    });
     
     function save(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {} }
     function load(key) { try { return JSON.parse(localStorage.getItem(key)); } catch(e) { return null; } }
@@ -256,13 +276,15 @@
     }
     
     function clearAllData() {
-      if (confirm('Tüm veriler silinecek. Emin misiniz?')) {
-        localStorage.removeItem(KEYS.text); localStorage.removeItem(KEYS.sentences); localStorage.removeItem(KEYS.bookmark);
-        document.getElementById('inputText').value = '';
-        document.getElementById('savedInfo').style.display = 'none';
-        document.getElementById('continueBtn').style.display = 'none';
-        sentences = []; bookmarkedPage = null;
-      }
+      localStorage.removeItem(KEYS.text); 
+      localStorage.removeItem(KEYS.sentences); 
+      localStorage.removeItem(KEYS.bookmark);
+      document.getElementById('inputText').value = '';
+      document.getElementById('savedInfo').style.display = 'none';
+      document.getElementById('continueBtn').style.display = 'none';
+      sentences = []; 
+      bookmarkedPage = null;
+      alert('Veriler silindi!');
     }
     
     function cancelTranslation() {
@@ -270,22 +292,24 @@
       hideLoading();
     }
     
-    // MyMemory Free Translation API (no API key needed, CORS friendly)
+    // Google Translate Free API (no key needed, works from browser)
     async function translateSentence(text, retryCount = 0) {
-      const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=ru|tr`;
+      const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=ru&tl=tr&dt=t&q=${encodeURIComponent(text)}`;
       
       try {
         const res = await fetch(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         
-        if (data.responseStatus === 200 && data.responseData && data.responseData.translatedText) {
-          return data.responseData.translatedText;
+        // Response format: [[["translated text","original text",...],...],...]
+        if (data && data[0] && data[0][0] && data[0][0][0]) {
+          return data[0][0][0];
         }
         throw new Error('No translation');
       } catch (e) {
+        console.error('Translation error:', e);
         if (retryCount < 2) {
-          await sleep(1000);
+          await sleep(1500);
           return translateSentence(text, retryCount + 1);
         }
         return '(çeviri hatası)';
@@ -352,13 +376,22 @@
     }
     
     function openBook(startPage) {
-      pages = [];
-      for (let i = 0; i < sentences.length; i += SENTENCES_PER_PAGE) pages.push(sentences.slice(i, i + SENTENCES_PER_PAGE));
-      currentPage = Math.min(startPage, pages.length - 1);
-      revealedSentences = {};
       document.getElementById('inputScreen').style.display = 'none';
       document.getElementById('bookScreen').style.display = 'flex';
-      renderPage(); updateLangLabels();
+      
+      // Calculate after bookScreen is visible
+      setTimeout(() => {
+        SENTENCES_PER_PAGE = calculateSentencesPerPage();
+        
+        pages = [];
+        for (let i = 0; i < sentences.length; i += SENTENCES_PER_PAGE) {
+          pages.push(sentences.slice(i, i + SENTENCES_PER_PAGE));
+        }
+        currentPage = Math.min(startPage, pages.length - 1);
+        revealedSentences = {};
+        renderPage(); 
+        updateLangLabels();
+      }, 50);
     }
     
     function goBack() {
@@ -391,7 +424,20 @@
         const speakBtn = document.createElement('button');
         speakBtn.className = 'speak-btn';
         speakBtn.textContent = '🔊';
-        speakBtn.onclick = function(e) { e.preventDefault(); e.stopPropagation(); speak(main, mLang); };
+        speakBtn.addEventListener('click', function(e) { 
+          e.preventDefault(); 
+          e.stopPropagation(); 
+          e.stopImmediatePropagation();
+          speak(main, mLang); 
+          return false;
+        }, { capture: true });
+        speakBtn.addEventListener('touchend', function(e) { 
+          e.preventDefault(); 
+          e.stopPropagation(); 
+          e.stopImmediatePropagation();
+          speak(main, mLang); 
+          return false;
+        }, { capture: true, passive: false });
         mainDiv.appendChild(speakBtn);
         div.appendChild(mainDiv);
         
@@ -404,7 +450,20 @@
         const speakBtnSmall = document.createElement('button');
         speakBtnSmall.className = 'speak-btn speak-btn-small';
         speakBtnSmall.textContent = '🔊';
-        speakBtnSmall.onclick = function(e) { e.preventDefault(); e.stopPropagation(); speak(hidden, hLang); };
+        speakBtnSmall.addEventListener('click', function(e) { 
+          e.preventDefault(); 
+          e.stopPropagation(); 
+          e.stopImmediatePropagation();
+          speak(hidden, hLang); 
+          return false;
+        }, { capture: true });
+        speakBtnSmall.addEventListener('touchend', function(e) { 
+          e.preventDefault(); 
+          e.stopPropagation(); 
+          e.stopImmediatePropagation();
+          speak(hidden, hLang); 
+          return false;
+        }, { capture: true, passive: false });
         hiddenInner.appendChild(speakBtnSmall);
         hiddenDiv.appendChild(hiddenInner);
         div.appendChild(hiddenDiv);
@@ -414,11 +473,12 @@
         hint.textContent = langMode === 'ru' ? 'Türkçe için dokun' : 'Rusça için dokun';
         div.appendChild(hint);
         
-        div.onclick = function(e) {
-          if (e.target.classList.contains('speak-btn')) return;
+        div.addEventListener('click', function(e) {
+          // Don't toggle if clicking on speak button
+          if (e.target.classList.contains('speak-btn') || e.target.closest('.speak-btn')) return;
           revealedSentences[`${currentPage}-${idx}`] = !revealedSentences[`${currentPage}-${idx}`];
           renderPage();
-        };
+        });
         
         container.appendChild(div);
       });
@@ -442,11 +502,7 @@
     }
     
     function setupSwipe() {
-      let sx = 0, ex = 0;
-      const c = document.getElementById('bookContainer');
-      c.addEventListener('touchstart', e => sx = e.touches[0].clientX, { passive: true });
-      c.addEventListener('touchmove', e => ex = e.touches[0].clientX, { passive: true });
-      c.addEventListener('touchend', () => { const d = sx - ex; if (Math.abs(d) > 50) goToPage(d > 0 ? 'next' : 'prev'); }, { passive: true });
+      // Swipe disabled - only buttons work for navigation
     }
     
     function toggleLangMode() { langMode = langMode === 'ru' ? 'tr' : 'ru'; revealedSentences = {}; updateLangLabels(); renderPage(); saveSettings(); }
